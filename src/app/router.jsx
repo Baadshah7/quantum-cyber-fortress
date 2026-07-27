@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import AppShell from '@/layout/AppShell';
-import PlaceholderGate from '@/features/gate/PlaceholderGate';
+import LandingExperience from '@/features/gate/LandingExperience';
 import PlaceholderAcademy from '@/features/academy/PlaceholderAcademy';
 import PlaceholderSimulator from '@/features/simulator/PlaceholderSimulator';
 import PlaceholderArena from '@/features/arena/PlaceholderArena';
@@ -15,7 +15,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: '',
-        element: <PlaceholderGate />,
+        element: <LandingExperience />,
       },
       {
         path: 'academy',

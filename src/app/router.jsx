@@ -43,5 +43,7 @@ export const router = createBrowserRouter([
       },
     ],
   },
-]);
+], {
+  basename: '/quantum-cyber-fortress',
+});
 

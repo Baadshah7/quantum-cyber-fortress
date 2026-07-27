@@ -15,7 +15,7 @@ export default function PlaceholderArena() {
         Put your skills to the ultimate test in competitive CTF-style challenges. Solve network puzzles, decrypt hashes, and patch vulnerable configurations.
       </p>
       <Card className="p-8 max-w-md w-full flex flex-col gap-4 mt-6">
-        <Badge variant="critical" className="mx-auto">Zone Status: Coming Soon</Badge>
+        <Badge status="coming-soon" className="mx-auto">Zone Status: Coming Soon</Badge>
         <span className="font-mono text-xs text-text-muted">ARENA_CTF_STANDBY</span>
         <div className="h-[1px] bg-border-subtle w-full my-2" />
         <p className="text-sm font-ui text-text-secondary">

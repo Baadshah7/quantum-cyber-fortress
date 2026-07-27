@@ -15,7 +15,7 @@ export default function PlaceholderWatchtower() {
         Stay updated with real-time cybersecurity news and live threat intelligence feeds. Know what threat vectors are active globally.
       </p>
       <Card className="p-8 max-w-md w-full flex flex-col gap-4 mt-6">
-        <Badge variant="cyan" className="mx-auto">Zone Status: Coming Soon</Badge>
+        <Badge status="coming-soon" className="mx-auto">Zone Status: Coming Soon</Badge>
         <span className="font-mono text-xs text-text-muted">WATCHTOWER_FEED_OFFLINE</span>
         <div className="h-[1px] bg-border-subtle w-full my-2" />
         <p className="text-sm font-ui text-text-secondary">

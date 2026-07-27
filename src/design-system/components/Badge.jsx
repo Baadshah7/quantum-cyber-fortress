@@ -1,11 +1,24 @@
 
+
 export function Badge({
   children,
   variant = 'default',
+  status,
   className = '',
   ...props
 }) {
   const baseStyles = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold font-ui uppercase tracking-wider border';
+
+  const statusMap = {
+    'active': 'cyan',
+    'coming-soon': 'default',
+    'locked': 'default',
+    'warning': 'warning',
+    'critical': 'critical',
+    'success': 'success',
+  };
+
+  const activeVariant = status ? (statusMap[status] || 'default') : variant;
 
   const variants = {
     default: 'bg-bg-tertiary text-text-secondary border-border-subtle',
@@ -18,11 +31,10 @@ export function Badge({
 
   return (
     <span
-      className={`${baseStyles} ${variants[variant]} ${className}`}
+      className={`${baseStyles} ${variants[activeVariant]} ${className}`}
       {...props}
     >
       {children}
     </span>
   );
 }
-

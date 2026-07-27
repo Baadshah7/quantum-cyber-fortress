@@ -15,7 +15,7 @@ export default function PlaceholderGate() {
         Welcome to the Quantum Cyber Fortress. This immersive landing zone serves as your entry portal to verify credentials and establish your Sentinel connection.
       </p>
       <Card className="p-8 max-w-md w-full flex flex-col gap-4 mt-6">
-        <Badge variant="cyan" className="mx-auto">Zone Status: Active</Badge>
+        <Badge status="active" className="mx-auto">Zone Status: Active</Badge>
         <span className="font-mono text-xs text-text-muted">GATE_INITIALIZATION_OK</span>
         <div className="h-[1px] bg-border-subtle w-full my-2" />
         <p className="text-sm font-ui text-text-secondary">

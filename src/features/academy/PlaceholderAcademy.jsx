@@ -15,7 +15,7 @@ export default function PlaceholderAcademy() {
         Engage with progressive cybersecurity modules. Study defensive protocols, cryptography principles, and security awareness.
       </p>
       <Card className="p-8 max-w-md w-full flex flex-col gap-4 mt-6">
-        <Badge variant="violet" className="mx-auto">Zone Status: Coming Soon</Badge>
+        <Badge status="coming-soon" className="mx-auto">Zone Status: Coming Soon</Badge>
         <span className="font-mono text-xs text-text-muted">ACADEMY_MODULES_LOCKED</span>
         <div className="h-[1px] bg-border-subtle w-full my-2" />
         <p className="text-sm font-ui text-text-secondary">

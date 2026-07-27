@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+// Trigger Pages deploy workflow
 import react from '@vitejs/plugin-react'
 import path from 'path'
 import { fileURLToPath } from 'url'

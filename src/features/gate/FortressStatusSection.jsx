@@ -3,7 +3,8 @@ import { motion } from 'framer-motion';
 import { StatCounter } from '@/design-system/components/StatCounter';
 import { Badge } from '@/design-system/components/Badge';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { Shield, ShieldAlert, Cpu, Activity, Award, Target } from 'lucide-react';
+import { Shield, ShieldAlert, Activity, Award, Target } from 'lucide-react';
+import BrowserSecurityIndexPanel from './BrowserSecurityIndexPanel';
 
 function AnimatedNumber({ value, duration = 1200 }) {
   const [count, setCount] = useState(0);
@@ -84,76 +85,72 @@ export default function FortressStatusSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="relative">
-            <StatCounter
-              label="Fortress Status"
-              value="Operational"
-              icon={Shield}
-              variant="cyan"
-            />
-            <div className="absolute top-4 right-16">
-              <Badge status="active">Active</Badge>
-            </div>
+        <div className="flex flex-col lg:flex-row gap-6 items-start">
+          {/* Browser Security Index - Top hierarchy on Mobile/Tablet, Right Column on Desktop */}
+          <div className="w-full lg:w-1/3 lg:order-2">
+            <BrowserSecurityIndexPanel />
           </div>
 
-          <div className="relative">
-            <StatCounter
-              label="Threat Level"
-              value="Tier III"
-              icon={ShieldAlert}
-              variant="warning"
-            />
-            <div className="absolute top-4 right-16">
-              <Badge status="warning">Elevated</Badge>
+          {/* Grid of the 5 other telemetry cards - Bottom hierarchy on Mobile/Tablet, Left Column on Desktop */}
+          <div className="w-full lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-4 lg:order-1">
+            <div className="relative">
+              <StatCounter
+                label="Fortress Status"
+                value="Operational"
+                icon={Shield}
+                variant="cyan"
+              />
+              <div className="absolute top-4 right-16">
+                <Badge status="active">Active</Badge>
+              </div>
             </div>
-          </div>
 
-          <div className="relative">
-            <StatCounter
-              label="Security Score"
-              value={<><AnimatedNumber value={87} />%</>}
-              icon={Cpu}
-              variant="success"
-            />
-            <div className="absolute top-4 right-16">
-              <Badge status="success">High</Badge>
+            <div className="relative">
+              <StatCounter
+                label="Threat Level"
+                value="Tier III"
+                icon={ShieldAlert}
+                variant="warning"
+              />
+              <div className="absolute top-4 right-16">
+                <Badge status="warning">Elevated</Badge>
+              </div>
             </div>
-          </div>
 
-          <div className="relative">
-            <StatCounter
-              label="System Health"
-              value={<><AnimatedNumber value={99} />%</>}
-              icon={Activity}
-              variant="success"
-            />
-            <div className="absolute top-4 right-16">
-              <Badge status="success">Optimal</Badge>
+            <div className="relative">
+              <StatCounter
+                label="System Health"
+                value={<><AnimatedNumber value={99} />%</>}
+                icon={Activity}
+                variant="success"
+              />
+              <div className="absolute top-4 right-16">
+                <Badge status="success">Optimal</Badge>
+              </div>
             </div>
-          </div>
 
-          <div className="relative">
-            <StatCounter
-              label="Sentinel Rank"
-              value="Level 1"
-              icon={Award}
-              variant="cyan"
-            />
-            <div className="absolute top-4 right-16">
-              <Badge status="coming-soon">Recruit</Badge>
+            <div className="relative">
+              <StatCounter
+                label="Sentinel Rank"
+                value="Level 1"
+                icon={Award}
+                variant="cyan"
+              />
+              <div className="absolute top-4 right-16">
+                <Badge status="coming-soon">Recruit</Badge>
+              </div>
             </div>
-          </div>
 
-          <div className="relative">
-            <StatCounter
-              label="Active Mission"
-              value="Sector 00"
-              icon={Target}
-              variant="cyan"
-            />
-            <div className="absolute top-4 right-16">
-              <Badge status="coming-soon">Init</Badge>
+            <div className="relative sm:col-span-2">
+              <StatCounter
+                label="Active Mission"
+                value="Sector 00"
+                icon={Target}
+                variant="cyan"
+              />
+              <div className="absolute top-4 right-16">
+                <Badge status="coming-soon">Init</Badge>
+              </div>
             </div>
           </div>
         </div>
@@ -161,3 +158,4 @@ export default function FortressStatusSection() {
     </section>
   );
 }
+

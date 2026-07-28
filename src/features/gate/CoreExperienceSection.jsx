@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Card } from '@/design-system/components/Card';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { BookOpen, Terminal, Trophy } from 'lucide-react';
+import { BookOpen, Terminal, Radio } from 'lucide-react';
 
 export default function CoreExperienceSection() {
   const { reducedMotion } = useReducedMotion();
@@ -27,7 +27,7 @@ export default function CoreExperienceSection() {
   return (
     <section className="py-12 px-4">
       <div className="max-w-6xl mx-auto flex flex-col gap-8">
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 text-center md:text-left">
           <span className="text-xs font-mono font-bold tracking-widest text-accent-cyan uppercase">
             CORE CAPABILITIES
           </span>
@@ -45,15 +45,15 @@ export default function CoreExperienceSection() {
         >
           <motion.div variants={cardVariants}>
             <Card className="p-6 h-full flex flex-col gap-4 border border-border-subtle hover:shadow-glow-cyan hover:border-accent-cyan transition-all duration-200">
-              <div className="p-3 bg-accent-cyan/10 border border-accent-cyan/20 rounded-btn text-accent-cyan w-fit">
+              <div className="p-3 bg-accent-violet/10 border border-accent-violet/20 rounded-btn text-accent-violet w-fit">
                 <BookOpen className="w-5 h-5" aria-hidden="true" />
               </div>
               <div className="flex flex-col gap-2">
                 <h3 className="text-base font-display font-bold text-text-primary">
-                  Interactive Learning
+                  Interactive Learning Hub
                 </h3>
                 <p className="text-xs font-ui text-text-secondary leading-relaxed">
-                  Engage with structured visual lessons designed for user interaction. Comprehend complex cryptography and security policies through conceptual clarity and testing.
+                  Engage with structured syllabus summaries in our Academy Chamber. Understand complex topics like Cryptography, Linux admin, OWASP, auth methods, and malware.
                 </p>
               </div>
             </Card>
@@ -66,10 +66,10 @@ export default function CoreExperienceSection() {
               </div>
               <div className="flex flex-col gap-2">
                 <h3 className="text-base font-display font-bold text-text-primary">
-                  Sandboxed Simulators
+                  Hands-On Security Labs
                 </h3>
                 <p className="text-xs font-ui text-text-secondary leading-relaxed">
-                  Analyze and mitigate security threat indicators in isolated terminal workspaces. Test your reflexes against phishing payloads and password vulnerabilities without real-world risk.
+                  Analyze and solve security threat exercises in isolated terminal workspaces inside the Training Yard. Test passwords, decode Caesar/Base64, and analyze phishing indicators.
                 </p>
               </div>
             </Card>
@@ -77,15 +77,15 @@ export default function CoreExperienceSection() {
 
           <motion.div variants={cardVariants}>
             <Card className="p-6 h-full flex flex-col gap-4 border border-border-subtle hover:shadow-glow-cyan hover:border-accent-cyan transition-all duration-200">
-              <div className="p-3 bg-accent-violet/10 border border-accent-violet/20 rounded-btn text-accent-violet w-fit">
-                <Trophy className="w-5 h-5" aria-hidden="true" />
+              <div className="p-3 bg-accent-cyan/10 border border-accent-cyan/20 rounded-btn text-accent-cyan w-fit">
+                <Radio className="w-5 h-5" aria-hidden="true" />
               </div>
               <div className="flex flex-col gap-2">
                 <h3 className="text-base font-display font-bold text-text-primary">
-                  Gamified CTFs
+                  Threat Intelligence Feed
                 </h3>
                 <p className="text-xs font-ui text-text-secondary leading-relaxed">
-                  Solve capture-the-flag defensive scenarios. Decrypt strings, patch codes, earn credentials, and log achievements as you climb ranks from Recruit to Quantum Warden.
+                  Audit live threat databases and real-time CVE advisories in the Watchtower. Monitor global attack radar coordinate sweeps and threat trends to stay secure.
                 </p>
               </div>
             </Card>

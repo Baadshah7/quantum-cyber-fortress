@@ -4,48 +4,32 @@ export const fortressZones = [
     icon: 'Shield',
     route: '/',
     description: 'The entrance checkpoint. Verify your credentials, establish your Sentinel identity, and sync system logs.',
+    objective: 'Establish identity, initialize cryptographic link, and verify terminal credentials.',
     status: 'active'
   },
   {
-    name: 'Academy Chamber',
+    name: 'Academy',
     icon: 'BookOpen',
     route: '/academy',
-    description: 'Acquire foundational security methodologies. Study defensive protocols, crypto concepts, and security basics.',
-    status: 'coming-soon'
+    description: 'Acquire foundational security methodologies. Study defensive protocols, cryptography concepts, OWASP vulnerabilities, and security basics in a structured learning environment.',
+    objective: 'Master core security domains: Networking, Cryptography, Linux, OWASP, Auth(N/Z), Malware, Forensics, IR, Policies, and CIA Triad.',
+    status: 'active'
   },
   {
     name: 'Training Yard',
     icon: 'Terminal',
     route: '/simulator',
-    description: 'Execute live defensive actions in sandboxed environments. Detect phishing and audit weak password setups.',
-    status: 'coming-soon'
-  },
-  {
-    name: 'Arena',
-    icon: 'Swords',
-    route: '/arena',
-    description: 'Test your analytical reflexes in competitive CTF challenges. Solve network puzzles and decrypt hashes.',
-    status: 'coming-soon'
-  },
-  {
-    name: 'War Room',
-    icon: 'LayoutDashboard',
-    route: '/dashboard',
-    description: 'Analyze real-time progress indicators, sentinel telemetry metrics, security status, and accomplishments.',
-    status: 'coming-soon'
+    description: 'Execute live defensive actions in sandboxed environments. Detect phishing payloads, test passwords, verify Caesar ciphers, and solve CLI challenges.',
+    objective: 'Neutralize simulated threats via hands-on labs: Phishing, Passwords, Caesar Cipher, Hashing, Log Audits, and CLI.',
+    status: 'active'
   },
   {
     name: 'Watchtower',
     icon: 'Radio',
     route: '/watchtower',
-    description: 'Audit active cyber news and analyze global threat feeds tracking active attack patterns.',
-    status: 'coming-soon'
-  },
-  {
-    name: 'Vault',
-    icon: 'Lock',
-    route: '/vault',
-    description: 'Access your earned cryptographic credentials, unlock badges, and showcase your achievements.',
-    status: 'coming-soon'
+    description: 'Audit active cybersecurity news, latest CVEs, threat intel feeds, security blogs, global attack trends, and advisories.',
+    objective: 'Analyze live threat intelligence, global vulnerability feeds, security advisories, and RSS threat streams.',
+    status: 'active'
   }
 ];
+

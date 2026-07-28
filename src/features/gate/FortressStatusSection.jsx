@@ -91,7 +91,7 @@ export default function FortressStatusSection() {
             <BrowserSecurityIndexPanel />
           </div>
 
-          {/* Grid of the 5 other telemetry cards - Bottom hierarchy on Mobile/Tablet, Left Column on Desktop */}
+          {/* Grid of the 4 telemetry cards - Bottom hierarchy on Mobile/Tablet, Left Column on Desktop */}
           <div className="w-full lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-4 lg:order-1">
             <div className="relative">
               <StatCounter
@@ -131,25 +131,13 @@ export default function FortressStatusSection() {
 
             <div className="relative">
               <StatCounter
-                label="Sentinel Rank"
-                value="Level 1"
-                icon={Award}
-                variant="cyan"
-              />
-              <div className="absolute top-4 right-16">
-                <Badge status="coming-soon">Recruit</Badge>
-              </div>
-            </div>
-
-            <div className="relative sm:col-span-2">
-              <StatCounter
-                label="Active Mission"
-                value="Sector 00"
+                label="Active Sector"
+                value="Sector 00: Gate"
                 icon={Target}
                 variant="cyan"
               />
               <div className="absolute top-4 right-16">
-                <Badge status="coming-soon">Init</Badge>
+                <Badge status="active">Active</Badge>
               </div>
             </div>
           </div>

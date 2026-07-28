@@ -4,6 +4,7 @@ import FortressStatusSection from './FortressStatusSection';
 import FortressOverviewSection from './FortressOverviewSection';
 import SentinelJourneySection from './SentinelJourneySection';
 import CoreExperienceSection from './CoreExperienceSection';
+import FutureRoadmapSection from './FutureRoadmapSection';
 import MissionCompletionCTASection from './MissionCompletionCTASection';
 
 export default function LandingExperience() {
@@ -15,6 +16,7 @@ export default function LandingExperience() {
       <FortressOverviewSection />
       <SentinelJourneySection />
       <CoreExperienceSection />
+      <FutureRoadmapSection />
       <MissionCompletionCTASection />
     </div>
   );

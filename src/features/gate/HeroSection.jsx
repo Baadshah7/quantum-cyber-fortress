@@ -64,7 +64,7 @@ export default function HeroSection() {
           variants={itemVariants}
           className="text-base sm:text-lg font-ui text-text-secondary max-w-xl leading-relaxed"
         >
-          Step into an immersive, gamified training simulation built to forge elite cyber defenders. Learn defensive protocols, neutralize live simulated threats, and master the art of cryptographic warfare.
+          Step into an immersive training experience where you have access to 4 operational sectors. Learn defensive protocols, neutralize live simulated threats, and monitor telemetry across the fortress.
         </motion.p>
 
         <motion.div

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { StatCounter } from '@/design-system/components/StatCounter';
 import { Badge } from '@/design-system/components/Badge';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { Shield, ShieldAlert, Activity, Award, Target } from 'lucide-react';
+import { Shield, ShieldAlert, Activity, Target } from 'lucide-react';
 import BrowserSecurityIndexPanel from './BrowserSecurityIndexPanel';
 
 function AnimatedNumber({ value, duration = 1200 }) {

@@ -23,7 +23,7 @@ export default function PortSweepWidget({ onComplete }) {
     );
     // Task complete when port 23 is closed
     if (portNum === 23) {
-      onComplete(true);
+      onComplete({ success: true });
     }
   };
 

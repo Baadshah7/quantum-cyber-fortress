@@ -14,9 +14,9 @@ export default function CiaTriadWidget({ onComplete }) {
   const handleSubmit = () => {
     setSubmitted(true);
     if (isSuccess) {
-      onComplete(true);
+      onComplete({ success: true });
     } else {
-      onComplete(false);
+      onComplete({ success: false });
     }
   };
 

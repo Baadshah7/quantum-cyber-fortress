@@ -3,8 +3,8 @@ import { Card } from '@/design-system/components/Card';
 import { Badge } from '@/design-system/components/Badge';
 import { Button } from '@/design-system/components/Button';
 import { 
-  Terminal, ShieldCheck, Play, Key, Mail, Lock, Info, 
-  Check, AlertTriangle, RefreshCw, Eye, Search, Code 
+  Terminal, ShieldCheck, Key, Mail, Lock, Info, 
+  Check, AlertTriangle, RefreshCw, Search, Code 
 } from 'lucide-react';
 
 // Email Mock Data for Phishing Simulator

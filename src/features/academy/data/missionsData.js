@@ -129,26 +129,296 @@ export const missionsData = [
     },
     unlockConditions: []
   },
-  // Stubs for Division 01
-  ...[2, 3, 4, 5].map(o => ({
-    id: `m-div01-0${o}`,
+  // ==================== NetOps Mission 2: Firewall Rule Builder ====================
+  {
+    id: 'm-div01-02',
     divisionId: 'div01',
-    order: o,
-    title: o === 2 ? 'Firewall Rule Configuration' : o === 3 ? 'DNS Poisoning Defense' : o === 4 ? 'Packet Capture Analysis' : 'IDS/IPS Policy Auditing',
-    difficulty: o + 1 > 5 ? 5 : o + 1,
+    order: 2,
+    title: 'Firewall Rule Builder',
+    difficulty: 3,
     estimatedMinutes: 15,
-    xpReward: (o + 1 > 5 ? 5 : o + 1) * 50,
+    xpReward: 150,
     brief: {
-      hook: 'Additional network operational metrics require Sentinel validation.',
-      context: 'Access to this system simulation channel is queued pending clearance approval.'
+      hook: 'A perimeter firewall is letting through more than it should — and blocking traffic it shouldn\'t.',
+      context: 'Configure allow/deny traffic rules to secure our internal SSH console (Port 22) against active brute force attacks while allowing web traffic (Port 443) from all incoming paths.'
     },
-    objectives: ['Deploy network safeguards', 'Analyze data packet flow'],
-    conceptBlocks: [],
-    realWorldExample: 'Classified infrastructure parameters.',
-    widget: { type: 'stub' },
-    quiz: { questions: [{ q: 'Placeholder', options: ['A', 'B'], answerIdx: 0, explanation: 'Placeholder' }], passThreshold: 1 },
-    unlockConditions: [`m-div01-0${o - 1}`]
-  })),
+    objectives: [
+      'Understand top-down rule precedence and ordering',
+      'Identify overly permissive rules within active rulesets',
+      'Apply explicit allow/deny boundaries to quarantine malicious nodes'
+    ],
+    conceptBlocks: [
+      {
+        type: 'stepFlow',
+        title: 'Firewall Rule Precedence',
+        data: [
+          'Evaluation starts at the top (index 0) and proceeds down.',
+          'The first rule matching the packet properties determines the outcome (ALLOW or DENY).',
+          'Any traffic not matching any rule hits the implicit default deny baseline.'
+        ]
+      }
+    ],
+    realWorldExample: 'In 2021, a major healthcare provider suffered a breach when administrators left a port open to "any" source IP to facilitate remote support, allowing internet-wide scans to discover and compromise the database via brute-force tools.',
+    widget: {
+      type: 'firewall-rule-builder',
+      config: {
+        existingRules: [
+          { action: 'allow', port: 22, source: '0.0.0.0/0' },
+          { action: 'allow', port: 443, source: '0.0.0.0/0' }
+        ],
+        attackVector: { port: 22, source: '203.0.113.5' },
+        legitimateTraffic: { port: 443, source: '192.168.1.50' }
+      }
+    },
+    quiz: {
+      questions: [
+        {
+          q: 'Why is a rule like "ALLOW 22 from 0.0.0.0/0" highly dangerous?',
+          options: [
+            'It exposes SSH to any IP on the internet',
+            'It blocks all HTTPS traffic',
+            'It disables logging'
+          ],
+          answerIdx: 0,
+          explanation: 'Port 22 (SSH) open to all sources allows hackers from anywhere to run brute-force scans on your credentials.'
+        },
+        {
+          q: 'If rule 1 is "ALLOW 443 from 0.0.0.0/0" and rule 2 is "DENY 443 from 10.0.0.5", does traffic from 10.0.0.5 on port 443 pass?',
+          options: [
+            'Yes, because evaluation stops at the first match',
+            'No, because DENY always overrides ALLOW',
+            'No, because the firewall evaluates all rules before deciding'
+          ],
+          answerIdx: 0,
+          explanation: 'Evaluation evaluates top-down and stops at the first match. Since rule 1 allows port 443 from any IP, 10.0.0.5 is allowed immediately.'
+        },
+        {
+          q: 'What is the security concept of "Default Deny"?',
+          options: [
+            'Blocking all traffic except explicitly allowed communication',
+            'Disabling the firewall when an attack occurs',
+            'Allowing all traffic unless a specific block rule is matched'
+          ],
+          answerIdx: 0,
+          explanation: 'A secure design (Default Deny) blocks everything by default and only allows traffic that has been explicitly authorized.'
+        }
+      ],
+      passThreshold: 2
+    },
+    unlockConditions: ['m-div01-01']
+  },
+
+  // ==================== NetOps Mission 3: DNS Routing Configuration ====================
+  {
+    id: 'm-div01-03',
+    divisionId: 'div01',
+    order: 3,
+    title: 'DNS Routing Configuration',
+    difficulty: 3,
+    estimatedMinutes: 20,
+    xpReward: 200,
+    brief: {
+      hook: 'Adversaries have compromised our local DNS server and poisoned internal path records.',
+      context: 'Inspect the active DNS lookup database and correct entries pointing to external hacker nodes. Restore direct resolution for core authentication services and APIs.'
+    },
+    objectives: [
+      'Detect DNS poisoning and spoofing signatures',
+      'Map hostnames to local internal server subnets',
+      'Restore secure DNS paths for email and web gateways'
+    ],
+    conceptBlocks: [
+      {
+        type: 'iconList',
+        title: 'Standard DNS Records',
+        data: [
+          { label: 'A Record', desc: 'Maps a hostname directly to an IPv4 address.' },
+          { label: 'CNAME Record', desc: 'Alias pointing a hostname to another hostname.' },
+          { label: 'MX Record', desc: 'Directs incoming email traffic to a mail server.' }
+        ]
+      }
+    ],
+    realWorldExample: 'DNS poisoning attacks route users trying to access legitimate portals (like banking or login APIs) to fake clones controlled by hackers, capturing passwords and authorization tokens in cleartext.',
+    widget: {
+      type: 'dns-routing-config',
+      config: {}
+    },
+    quiz: {
+      questions: [
+        {
+          q: 'What is the primary danger of DNS cache poisoning?',
+          options: [
+            'Legitimate requests are routed to unauthorized destination IPs',
+            'The client\'s network interface card burns out',
+            'All local files are encrypted with ransomware'
+          ],
+          answerIdx: 0,
+          explanation: 'DNS poisoning feeds false IP mappings, routing clients to attacker-controlled nodes instead of the real services.'
+        },
+        {
+          q: 'Which record type would you use to verify where incoming emails for a domain should route?',
+          options: [
+            'MX Record',
+            'A Record',
+            'TXT Record'
+          ],
+          answerIdx: 0,
+          explanation: 'MX (Mail Exchanger) records explicitly define mail server destinations.'
+        },
+        {
+          q: 'If secure-auth.internal should resolve to local IP 10.0.8.2 but currently resolves to 198.51.100.99, what is the remedy?',
+          options: [
+            'Edit the DNS server A record mapping to target 10.0.8.2',
+            'Disable the DNS server completely',
+            'Configure a CNAME record pointing to google.com'
+          ],
+          answerIdx: 0,
+          explanation: 'Updating the record to point to the legitimate internal IP server resolves the routing threat.'
+        }
+      ],
+      passThreshold: 2
+    },
+    unlockConditions: ['m-div01-02']
+  },
+
+  // ==================== NetOps Mission 4: Packet Capture Analysis ====================
+  {
+    id: 'm-div01-04',
+    divisionId: 'div01',
+    order: 4,
+    title: 'Packet Capture Analysis',
+    difficulty: 4,
+    estimatedMinutes: 20,
+    xpReward: 200,
+    brief: {
+      hook: 'An anomalous volume of unencrypted data transmission has been detected on the network.',
+      context: 'Inspect a live PCAP dump stream. Track protocol flags, decode packet payloads, and locate the stream transmitting credentials in cleartext.'
+    },
+    objectives: [
+      'Navigate Wireshark-style network packet details',
+      'Differentiate between secure (TLS) and insecure (HTTP) payloads',
+      'Flag anomalous credentials leaks in active tcp streams'
+    ],
+    conceptBlocks: [
+      {
+        type: 'diagram',
+        title: 'Cleartext vs Encrypted Packets',
+        data: 'HTTP: GET /login ➔ Payload: user=admin&pass=secret (Readable)\nHTTPS/TLS: GET /login ➔ Payload: 0x8df2a4c9b1... (Ciphertext)'
+      }
+    ],
+    realWorldExample: 'Legacy protocols like HTTP, Telnet, and FTP do not use encryption. If an attacker sits on the same network (e.g. public Wi-Fi), they can execute a packet capture to sniff administrator session credentials.',
+    widget: {
+      type: 'packet-capture-viewer',
+      config: {}
+    },
+    quiz: {
+      questions: [
+        {
+          q: 'What is the risk of logging credentials over plain HTTP?',
+          options: [
+            'The credentials are visible to any network interceptor in cleartext',
+            'The database fails to record the password hash',
+            'The login requests resolve too slowly'
+          ],
+          answerIdx: 0,
+          explanation: 'Unencrypted HTTP traffic can be intercepted by anybody on the connection path using packet sniffer utilities.'
+        },
+        {
+          q: 'Which protocol provides secure, encrypted web communication?',
+          options: [
+            'HTTPS',
+            'HTTP',
+            'Telnet'
+          ],
+          answerIdx: 0,
+          explanation: 'HTTPS wraps standard HTTP within a secure TLS/SSL encryption container.'
+        },
+        {
+          q: 'Why is a TCP handshake (SYN, SYN-ACK, ACK) required before data transmission?',
+          options: [
+            'To establish connection parameters and host availability',
+            'To compress the files being sent',
+            'To hash the session passwords'
+          ],
+          answerIdx: 0,
+          explanation: 'The 3-way handshake initializes connection states and sequence numbers between nodes.'
+        }
+      ],
+      passThreshold: 2
+    },
+    unlockConditions: ['m-div01-03']
+  },
+
+  // ==================== NetOps Mission 5: Network Segmentation & VLAN Access ====================
+  {
+    id: 'm-div01-05',
+    divisionId: 'div01',
+    order: 5,
+    title: 'Network Segmentation & VLAN Access',
+    difficulty: 4,
+    estimatedMinutes: 25,
+    xpReward: 250,
+    brief: {
+      hook: 'A rogue node on the Guest Wi-Fi subnet has initiated internal database port scans.',
+      context: 'Correct our network configuration by assigning nodes to isolated VLAN tags. Segregate guest and management subnets to block lateral server exploration.'
+    },
+    objectives: [
+      'Implement least-privilege network segmentation',
+      'Differentiate between Production, Management, and Guest VLANs',
+      'Prevent unauthorized lateral traffic between server segments'
+    ],
+    conceptBlocks: [
+      {
+        type: 'iconList',
+        title: 'Network Segmentation Benefits',
+        data: [
+          { label: 'Containment', desc: 'Isolates compromised devices, preventing malware from spreading.' },
+          { label: 'Least Privilege', desc: 'Ensures only required services (like web servers) can contact databases.' },
+          { label: 'Performance', desc: 'Reduces broadcast traffic domain clutter.' }
+        ]
+      }
+    ],
+    realWorldExample: 'The famous Target breach occurred when attackers compromised an HVAC vendor terminal, which sat on the same internal network segment as cash registers, allowing lateral network movement to capture card details.',
+    widget: {
+      type: 'vlan-segmentation',
+      config: {}
+    },
+    quiz: {
+      questions: [
+        {
+          q: 'What is the primary purpose of VLAN segmentation in network design?',
+          options: [
+            'To isolate traffic between different subnets, preventing unauthorized lateral movement',
+            'To speed up internet speeds for guest nodes',
+            'To backup server storage databases automatically'
+          ],
+          answerIdx: 0,
+          explanation: 'VLAN segments isolate traffic at Layer 2, ensuring nodes in separate segments cannot communicate directly without a routing gateway/firewall.'
+        },
+        {
+          q: 'If a guest node on VLAN 30 is compromised, can it inspect packets on VLAN 10 without a routing node?',
+          options: [
+            'No, because Layer 2 broadcast domains are completely isolated',
+            'Yes, guest nodes bypass segment boundaries by default',
+            'Yes, if they use SSH credentials'
+          ],
+          answerIdx: 0,
+          explanation: 'VLANs divide physical switches into virtual networks, isolating broadcast traffic at Layer 2.'
+        },
+        {
+          q: 'Where should the database server containing customer records be isolated?',
+          options: [
+            'In a secure production VLAN segment restricted from Guest access',
+            'In the public guest subnet for speed',
+            'Directly on the perimeter firewall WAN gateway'
+          ],
+          answerIdx: 0,
+          explanation: 'Core databases should be in restricted production segments, completely isolated from guest subnet routes.'
+        }
+      ],
+      passThreshold: 2
+    },
+    unlockConditions: ['m-div01-04']
+  },
 
   // ==================== DIVISION 02: IDENTITY & ACCESS CONTROL ====================
   {

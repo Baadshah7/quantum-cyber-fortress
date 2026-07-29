@@ -9,7 +9,7 @@ import { isAudioMuted, setAudioMuted, playTerminalBoot } from './utils/audioSynt
 import { 
   BookOpen, Globe, UserCheck, Key, Terminal, Shield, 
   Radio, ShieldAlert, FileText, Volume2, VolumeX, 
-  ChevronRight, ArrowLeft, Lock, Award, Eye 
+  ChevronRight, ArrowLeft, Lock 
 } from 'lucide-react';
 
 const iconMap = {
@@ -24,7 +24,7 @@ const iconMap = {
 };
 
 export default function PlaceholderAcademy() {
-  const { completedMissions, xp, lastSynced, sentinel, resetProgress } = useSentinel();
+  const { completedMissions, lastSynced, sentinel, resetProgress } = useSentinel();
   const [muted, setMuted] = useState(isAudioMuted());
   const [selectedDiv, setSelectedDiv] = useState(null);
   const [activeMission, setActiveMission] = useState(null);

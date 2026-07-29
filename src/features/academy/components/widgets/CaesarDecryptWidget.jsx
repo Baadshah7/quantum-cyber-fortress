@@ -25,9 +25,9 @@ export default function CaesarDecryptWidget({ onComplete }) {
 
   const handleTest = () => {
     if (isSuccess) {
-      onComplete(true);
+      onComplete({ success: true });
     } else {
-      onComplete(false);
+      onComplete({ success: false });
     }
   };
 

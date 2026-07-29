@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/design-system/components/Button';
 import { Badge } from '@/design-system/components/Badge';
-import { Lock, ShieldCheck, ShieldAlert, Cpu } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, Cpu } from 'lucide-react';
 
 export default function AuthHeadersWidget({ onComplete }) {
   const [headerKey, setHeaderKey] = useState('X-Access-Token');
@@ -15,9 +15,9 @@ export default function AuthHeadersWidget({ onComplete }) {
     e.preventDefault();
     setSubmitted(true);
     if (isSuccess) {
-      onComplete(true);
+      onComplete({ success: true });
     } else {
-      onComplete(false);
+      onComplete({ success: false });
     }
   };
 

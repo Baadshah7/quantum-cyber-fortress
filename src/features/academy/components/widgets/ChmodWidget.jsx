@@ -25,9 +25,9 @@ export default function ChmodWidget({ onComplete }) {
 
   const handleSubmit = () => {
     if (isSuccess) {
-      onComplete(true);
+      onComplete({ success: true });
     } else {
-      onComplete(false);
+      onComplete({ success: false });
     }
   };
 

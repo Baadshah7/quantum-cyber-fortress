@@ -7,19 +7,12 @@ import {
   playTerminalBoot, playMissionComplete, playRankUp 
 } from '../utils/audioSynth';
 import { 
-  ArrowLeft, ArrowRight, ShieldCheck, ShieldAlert, 
-  HelpCircle, Award, Volume2, Cpu, Info, Check, RefreshCw 
+  ArrowLeft, ArrowRight, ShieldAlert, 
+  HelpCircle, Award, Cpu, Info, Check 
 } from 'lucide-react';
 
-// Import interactive widgets
-import PortSweepWidget from './widgets/PortSweepWidget';
-import AuthHeadersWidget from './widgets/AuthHeadersWidget';
-import CaesarDecryptWidget from './widgets/CaesarDecryptWidget';
-import ChmodWidget from './widgets/ChmodWidget';
-import CiaTriadWidget from './widgets/CiaTriadWidget';
-import LogInspectorWidget from './widgets/LogInspectorWidget';
-import SqliSanitizeWidget from './widgets/SqliSanitizeWidget';
-import HashVerifierWidget from './widgets/HashVerifierWidget';
+// Import widget registry
+import { widgetRegistry } from './widgets/widgetRegistry';
 
 const STAGES = [
   { id: 'briefing', label: 'Briefing' },
@@ -53,9 +46,11 @@ export default function MissionConsole({ mission, onBack }) {
     playTerminalBoot();
   }, [mission.id]);
 
-  const handleLabCompletion = (success) => {
-    if (success) {
-      setLabCompleted(true);
+  const handleLabCompletion = (result) => {
+    if (result && typeof result === 'object') {
+      setLabCompleted(result.success);
+    } else {
+      setLabCompleted(!!result);
     }
   };
 
@@ -182,26 +177,16 @@ export default function MissionConsole({ mission, onBack }) {
     }
 
     try {
-      switch (wType) {
-        case 'port-sweep':
-          return <PortSweepWidget onComplete={handleLabCompletion} />;
-        case 'auth-headers':
-          return <AuthHeadersWidget onComplete={handleLabCompletion} />;
-        case 'caesar-decrypt':
-          return <CaesarDecryptWidget onComplete={handleLabCompletion} />;
-        case 'chmod':
-          return <ChmodWidget onComplete={handleLabCompletion} />;
-        case 'cia-triad':
-          return <CiaTriadWidget onComplete={handleLabCompletion} />;
-        case 'log-inspector':
-          return <LogInspectorWidget onComplete={handleLabCompletion} />;
-        case 'sqli-sanitize':
-          return <SqliSanitizeWidget onComplete={handleLabCompletion} />;
-        case 'hash-verifier':
-          return <HashVerifierWidget onComplete={handleLabCompletion} />;
-        default:
-          throw new Error('Unknown widget type');
+      const WidgetComponent = widgetRegistry[wType];
+      if (!WidgetComponent) {
+        throw new Error(`Unknown widget type: ${wType}`);
       }
+      return (
+        <WidgetComponent 
+          config={mission.widget.config} 
+          onComplete={handleLabCompletion} 
+        />
+      );
     } catch (e) {
       console.error(e);
       setWidgetError(true);

@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { Card } from '@/design-system/components/Card';
 import { Badge } from '@/design-system/components/Badge';
-import { Button } from '@/design-system/components/Button';
+
 import { motion } from 'framer-motion';
 import { 
   Radio, ShieldAlert, Cpu, Terminal as TermIcon, 
-  Search, BookOpen, AlertTriangle, ShieldCheck, ChevronRight 
+  Search, BookOpen 
 } from 'lucide-react';
 
 const CVES = [
@@ -83,7 +83,6 @@ const MOCK_LOG_TEMPLATES = [
 export default function PlaceholderWatchtower() {
   const [logs, setLogs] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCve, setSelectedCve] = useState(null);
   const logsEndRef = useRef(null);
 
   // Generate logs dynamically

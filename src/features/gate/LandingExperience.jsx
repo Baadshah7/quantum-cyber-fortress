@@ -3,8 +3,8 @@ import MissionBriefSection from './MissionBriefSection';
 import FortressStatusSection from './FortressStatusSection';
 import FortressOverviewSection from './FortressOverviewSection';
 import SentinelJourneySection from './SentinelJourneySection';
+import LabsCatalog from './components/LabsCatalog/LabsCatalog';
 import CoreExperienceSection from './CoreExperienceSection';
-import FutureRoadmapSection from './FutureRoadmapSection';
 import MissionCompletionCTASection from './MissionCompletionCTASection';
 
 export default function LandingExperience() {
@@ -15,8 +15,8 @@ export default function LandingExperience() {
       <FortressStatusSection />
       <FortressOverviewSection />
       <SentinelJourneySection />
+      <LabsCatalog />
       <CoreExperienceSection />
-      <FutureRoadmapSection />
       <MissionCompletionCTASection />
     </div>
   );

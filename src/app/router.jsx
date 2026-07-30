@@ -3,6 +3,7 @@ import AppShell from '@/layout/AppShell';
 import LandingExperience from '@/features/gate/LandingExperience';
 import PlaceholderAcademy from '@/features/academy/PlaceholderAcademy';
 import PlaceholderSimulator from '@/features/simulator/PlaceholderSimulator';
+import LabsPage from '@/features/labs/LabsPage';
 import PlaceholderWatchtower from '@/features/watchtower/PlaceholderWatchtower';
 
 export const router = createBrowserRouter([
@@ -21,6 +22,10 @@ export const router = createBrowserRouter([
       {
         path: 'simulator',
         element: <PlaceholderSimulator />,
+      },
+      {
+        path: 'labs',
+        element: <LabsPage />,
       },
       {
         path: 'arena',

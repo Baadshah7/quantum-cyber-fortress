@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card } from '@/design-system/components/Card';
-import { Badge } from '@/design-system/components/Badge';
+
 import { Button } from '@/design-system/components/Button';
 import { 
   Terminal, ShieldCheck, Key, Mail, Lock, Info, 
@@ -38,34 +38,7 @@ const PHISHING_EMAILS = [
   }
 ];
 
-// Inactive Labs for the Catalog
-const LABS_CATALOG = [
-  {
-    name: 'Log Analysis Lab',
-    desc: 'Audit raw server syslog streams, find unauthorized sudo attempts, and track intruder IP addresses.',
-    category: 'Analysis'
-  },
-  {
-    name: 'Packet Exercise Sandbox',
-    desc: 'Parse PCAP network capture streams to extract transferred files and identify cleartext credentials.',
-    category: 'Network'
-  },
-  {
-    name: 'CLI Challenges',
-    desc: 'Navigate restricted shells, find hidden files, and exploit file privileges to elevate access levels.',
-    category: 'Linux'
-  },
-  {
-    name: 'Security Quizzes',
-    desc: 'Test your understanding of security standards, incident lifecycle phases, and cryptographic ciphers.',
-    category: 'Theory'
-  },
-  {
-    name: 'Terminal Simulations',
-    desc: 'Interact with simulated shells modeling server systems to patch vulnerable software packages.',
-    category: 'System'
-  }
-];
+
 
 export default function PlaceholderSimulator() {
   const [activeTab, setActiveTab] = useState('password');
@@ -574,36 +547,6 @@ export default function PlaceholderSimulator() {
         </div>
       </div>
 
-      {/* Catalog of other labs */}
-      <div className="flex flex-col gap-4 mt-4">
-        <div className="flex flex-col gap-1">
-          <span className="text-xs font-mono font-bold tracking-widest text-accent-cyan uppercase">
-            LABS CATALOG
-          </span>
-          <h2 className="text-lg font-display font-semibold text-text-primary">
-            Advanced Security Simulation Modules
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {LABS_CATALOG.map((lab) => (
-            <Card key={lab.name} className="p-5 border border-border-subtle flex flex-col justify-between bg-bg-secondary/30">
-              <div className="flex flex-col gap-2">
-                <div className="flex justify-between items-center">
-                  <Badge variant="default" className="text-[9px] font-mono">{lab.category}</Badge>
-                  <Badge status="locked" className="text-[9px]">Simulation Standby</Badge>
-                </div>
-                <h3 className="text-sm font-display font-bold text-text-primary mt-1">{lab.name}</h3>
-                <p className="text-xs font-ui text-text-secondary leading-normal">{lab.desc}</p>
-              </div>
-
-              <div className="mt-4 pt-3 border-t border-border-subtle/20 flex justify-end">
-                <span className="text-[9px] font-mono text-text-muted uppercase">Clearance Lvl 2 Required</span>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

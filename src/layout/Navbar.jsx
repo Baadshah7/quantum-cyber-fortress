@@ -7,6 +7,7 @@ export const navigationItems = [
   { name: 'Gate', path: '/' },
   { name: 'Academy', path: '/academy' },
   { name: 'Training Yard', path: '/simulator' },
+  { name: 'Labs', path: '/labs' },
   { name: 'Watchtower', path: '/watchtower' },
 ];
 
@@ -32,6 +33,7 @@ export default function Navbar({ reducedMotion, toggleReducedMotion, onOpenMobil
               <NavLink
                 key={item.path}
                 to={item.path}
+                end={item.path === '/'}
                 className={({ isActive }) => 
                   `px-3 py-1.5 rounded-btn transition-all duration-200 border cursor-pointer ${
                     isActive

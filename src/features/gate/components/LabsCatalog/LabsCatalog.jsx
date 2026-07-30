@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { labsData } from './labs.data';
 import LabsGrid from './LabsGrid';
 
-export default function LabsCatalog() {
+export default function LabsCatalog({ isPage = false }) {
   // Developer state overrides for QA/Verification
   const [devState, setDevState] = useState('normal'); // 'normal' | 'loading' | 'empty'
 
@@ -27,7 +27,10 @@ export default function LabsCatalog() {
   return (
     <section 
       id="labs-catalog" 
-      className="py-12 px-4 relative overflow-hidden border-t border-border-subtle/30 bg-bg-secondary/5 scroll-mt-20"
+      className={isPage 
+        ? "relative overflow-hidden" 
+        : "py-12 px-4 relative overflow-hidden border-t border-border-subtle/30 bg-bg-secondary/5 scroll-mt-20"
+      }
     >
       <div className="max-w-6xl mx-auto flex flex-col gap-8 relative z-10">
         

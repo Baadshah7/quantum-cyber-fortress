@@ -75,6 +75,7 @@ export default function MobileNav({ isOpen, onClose }) {
                   <NavLink
                     key={item.path}
                     to={item.path}
+                    end={item.path === '/'}
                     className={({ isActive }) => 
                       `px-4 py-3 rounded-btn transition-all duration-200 border w-full flex ${
                         isActive

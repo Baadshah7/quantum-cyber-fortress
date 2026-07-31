@@ -5,6 +5,7 @@ import PlaceholderAcademy from '@/features/academy/PlaceholderAcademy';
 import PlaceholderSimulator from '@/features/simulator/PlaceholderSimulator';
 import LabsPage from '@/features/labs/LabsPage';
 import PlaceholderWatchtower from '@/features/watchtower/PlaceholderWatchtower';
+import LogAnalysisLabPage from '@/features/labs/log-analysis/LogAnalysisLabPage';
 
 export const router = createBrowserRouter([
   {
@@ -26,6 +27,10 @@ export const router = createBrowserRouter([
       {
         path: 'labs',
         element: <LabsPage />,
+      },
+      {
+        path: 'labs/log-analysis',
+        element: <LogAnalysisLabPage />,
       },
       {
         path: 'arena',

@@ -3,6 +3,7 @@ import { Badge } from '@/design-system/components/Badge';
 import { iconMap } from './iconMap';
 import LabStatusBadge from './LabStatusBadge';
 import LabDifficultyBadge from './LabDifficultyBadge';
+import { Link } from 'react-router-dom';
 
 const hoverGlowClasses = {
   'accent-cyan': 'hover:border-accent-cyan hover:shadow-glow-cyan',
@@ -60,7 +61,9 @@ export default function LabCard({ lab }) {
   const ActionIcon = iconMap[action.iconName] || iconMap.ChevronRight;
   const titleId = `lab-title-${lab.id}`;
 
-  return (
+  const isClickable = lab.status === 'available' || lab.status === 'completed';
+
+  const cardContent = (
     <Card
       role="group"
       aria-labelledby={titleId}
@@ -84,7 +87,7 @@ export default function LabCard({ lab }) {
               {lab.category}
             </span>
           </div>
-          <LabStatusBadge status={lab.status} clearance={lab.clearance} />
+          <LabStatusBadge status={lab.status} clearance={lab.clearance} scoreText={lab.scoreText} />
         </div>
 
         {/* Content Row */}
@@ -138,4 +141,14 @@ export default function LabCard({ lab }) {
       </div>
     </Card>
   );
+
+  if (isClickable) {
+    return (
+      <Link to={`/labs/${lab.id}`} className="block h-full cursor-pointer">
+        {cardContent}
+      </Link>
+    );
+  }
+
+  return cardContent;
 }

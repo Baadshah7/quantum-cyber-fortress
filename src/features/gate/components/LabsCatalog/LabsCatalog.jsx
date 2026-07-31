@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { labsData } from './labs.data';
 import LabsGrid from './LabsGrid';
+import { useSentinel } from '@/context/SentinelProgressContext';
 
 export default function LabsCatalog({ isPage = false }) {
+  const { completedMissions } = useSentinel();
   // Developer state overrides for QA/Verification
   const [devState, setDevState] = useState('normal'); // 'normal' | 'loading' | 'empty'
 
@@ -17,7 +19,28 @@ export default function LabsCatalog({ isPage = false }) {
 
   const getActiveLabs = () => {
     if (devState === 'empty') return [];
-    return labsData;
+    
+    return labsData.map(lab => {
+      if (lab.id === 'log-analysis') {
+        const isCompleted = completedMissions.includes('log-analysis');
+        const savedScoreData = localStorage.getItem('qcf_lab_score_log-analysis');
+        let scoreText = null;
+        if (savedScoreData) {
+          try {
+            const { score, maxScore } = JSON.parse(savedScoreData);
+            scoreText = `Best Score: ${score}/${maxScore}`;
+          } catch (e) {
+            scoreText = 'Completed';
+          }
+        }
+        return {
+          ...lab,
+          status: isCompleted ? 'completed' : 'available',
+          scoreText
+        };
+      }
+      return lab;
+    });
   };
 
   const getIsLoading = () => {

@@ -2,7 +2,7 @@ import { Badge } from '@/design-system/components/Badge';
 import { Tooltip } from '@/design-system/components/Tooltip';
 import { iconMap } from './iconMap';
 
-export default function LabStatusBadge({ status, clearance = 'Level II' }) {
+export default function LabStatusBadge({ status, clearance = 'Level II', scoreText }) {
   // Define status details mapping
   const statusDetails = {
     'standby': {
@@ -74,7 +74,7 @@ export default function LabStatusBadge({ status, clearance = 'Level II' }) {
       >
         <IconComponent className="w-3 h-3 shrink-0" aria-hidden="true" />
         <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${details.ledClass}`} aria-hidden="true" />
-        <span>{details.label}</span>
+        <span>{scoreText || details.label}</span>
         
         {/* Screen reader fallback for accessible descriptions */}
         <span className="sr-only">

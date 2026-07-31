@@ -138,10 +138,10 @@ export default function PacketExerciseSandboxPage() {
 
   // Reorderable sequence state
   const [timelineItems, setTimelineItems] = useState([
-    { id: 'ftp', label: 'Anonymous FTP connection and downloading sensitive_firmware.bin', correctOrder: 1 },
+    { id: 'ftp', label: 'Anonymous FTP connection and downloading sensitive_firmware.bin', correctOrder: 2 },
     { id: 'dns', label: 'DNS resolution query for login.fortress.local', correctOrder: 0 },
-    { id: 'login', label: 'Cleartext HTTP credential submission via POST', correctOrder: 3 },
-    { id: 'handshake', label: 'HTTP connection TCP port 80 handshake initiation', correctOrder: 2 }
+    { id: 'login', label: 'HTTP POST login request with cleartext credentials', correctOrder: 3 },
+    { id: 'http_get', label: 'TCP handshake and HTTP GET request for index page', correctOrder: 1 }
   ]);
 
   const currentScore = Object.values(taskStatus).filter(status => status === 'correct').length;
@@ -202,11 +202,11 @@ export default function PacketExerciseSandboxPage() {
   };
 
   const verifyTask4 = () => {
-    // Correct sequence: dns, ftp, handshake, login
+    // Correct sequence: dns, http_get, ftp, login
     const isCorrect = 
       timelineItems[0].id === 'dns' &&
-      timelineItems[1].id === 'ftp' &&
-      timelineItems[2].id === 'handshake' &&
+      timelineItems[1].id === 'http_get' &&
+      timelineItems[2].id === 'ftp' &&
       timelineItems[3].id === 'login';
 
     setTaskStatus(prev => ({ ...prev, task4: isCorrect ? 'correct' : 'incorrect' }));
@@ -682,7 +682,7 @@ export default function PacketExerciseSandboxPage() {
                     </button>
                     {hints.task4 && (
                       <p className="mt-1.5 p-2 bg-bg-primary/50 border border-border-subtle/50 rounded-md text-text-secondary leading-normal font-mono text-[9px]">
-                        Verify order using packet timestamps: DNS lookup happens first (`0.00`), anonymous file download is second (`1.25`), HTTP TCP handshake is third (`2.100`), and cleartext HTTP POST is last (`2.112`).
+                        Verify order using packet timestamps: DNS lookup happens first (`0.00`), HTTP GET index page is second (`0.01`), anonymous FTP transfer is third (`1.25`), and cleartext HTTP POST is last (`2.11`).
                       </p>
                     )}
                   </div>

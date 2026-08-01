@@ -10,6 +10,7 @@ import PacketExerciseSandboxPage from '@/features/labs/packet-sandbox/PacketExer
 import CliChallengesPage from '@/features/labs/cli-challenges/CliChallengesPage';
 import SecurityQuizzesPage from '@/features/labs/security-quizzes/SecurityQuizzesPage';
 import TerminalSimulationsPage from '@/features/labs/terminal-simulations/TerminalSimulationsPage';
+import ProtectedRoute from './ProtectedRoute';
 
 export const router = createBrowserRouter([
   {
@@ -22,35 +23,35 @@ export const router = createBrowserRouter([
       },
       {
         path: 'academy',
-        element: <PlaceholderAcademy />,
+        element: <ProtectedRoute><PlaceholderAcademy /></ProtectedRoute>,
       },
       {
         path: 'simulator',
-        element: <PlaceholderSimulator />,
+        element: <ProtectedRoute><PlaceholderSimulator /></ProtectedRoute>,
       },
       {
         path: 'labs',
-        element: <LabsPage />,
+        element: <ProtectedRoute><LabsPage /></ProtectedRoute>,
       },
       {
         path: 'labs/log-analysis',
-        element: <LogAnalysisLabPage />,
+        element: <ProtectedRoute><LogAnalysisLabPage /></ProtectedRoute>,
       },
       {
         path: 'labs/packet-sandbox',
-        element: <PacketExerciseSandboxPage />,
+        element: <ProtectedRoute><PacketExerciseSandboxPage /></ProtectedRoute>,
       },
       {
         path: 'labs/cli-challenges',
-        element: <CliChallengesPage />,
+        element: <ProtectedRoute><CliChallengesPage /></ProtectedRoute>,
       },
       {
         path: 'labs/security-quizzes',
-        element: <SecurityQuizzesPage />,
+        element: <ProtectedRoute><SecurityQuizzesPage /></ProtectedRoute>,
       },
       {
         path: 'labs/terminal-simulations',
-        element: <TerminalSimulationsPage />,
+        element: <ProtectedRoute><TerminalSimulationsPage /></ProtectedRoute>,
       },
       {
         path: 'arena',
@@ -62,7 +63,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'watchtower',
-        element: <PlaceholderWatchtower />,
+        element: <ProtectedRoute><PlaceholderWatchtower /></ProtectedRoute>,
       },
       {
         path: 'vault',
@@ -73,4 +74,5 @@ export const router = createBrowserRouter([
 ], {
   basename: '/quantum-cyber-fortress',
 });
+
 

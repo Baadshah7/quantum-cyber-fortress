@@ -3,12 +3,24 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { X, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useAuth } from '@/context/AuthContext';
 import { navigationItems } from './Navbar';
+import { Button } from '@/design-system/components/Button';
 
 export default function MobileNav({ isOpen, onClose }) {
   const location = useLocation();
   const drawerRef = useRef(null);
   const { reducedMotion } = useReducedMotion();
+  const { user, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      onClose();
+    } catch (err) {
+      console.error('Sign out failed:', err);
+    }
+  };
 
   useEffect(() => {
     onClose();
@@ -95,9 +107,31 @@ export default function MobileNav({ isOpen, onClose }) {
               })}
             </div>
 
-            <div className="mt-auto pt-4 border-t border-border-subtle flex items-center gap-2 font-mono text-[10px] text-text-muted">
-              <div className="w-1.5 h-1.5 rounded-full bg-status-success shadow-[0_0_6px_rgba(52,211,153,0.5)] animate-pulse" />
-              <span>SENTINEL_OK</span>
+            <div className="mt-auto pt-4 border-t border-border-subtle flex flex-col gap-3">
+              {user ? (
+                <div className="flex flex-col gap-2 font-mono text-[10px]">
+                  <div className="flex items-center gap-2 text-text-secondary">
+                    <div className="w-1.5 h-1.5 rounded-full bg-status-success shadow-[0_0_6px_rgba(52,211,153,0.5)] animate-pulse" />
+                    <span className="truncate max-w-[180px]" title={user.email}>{user.email}</span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSignOut}
+                    className="w-full text-[10px] font-bold text-status-critical border-status-critical/30 hover:bg-status-critical/5 py-1.5"
+                  >
+                    SIGN OUT SESSION
+                  </Button>
+                </div>
+              ) : (
+                <NavLink
+                  to="/"
+                  onClick={onClose}
+                  className="w-full py-2 text-center text-xs font-mono font-bold tracking-wider text-accent-cyan border border-accent-cyan/20 bg-accent-cyan/5 rounded-btn hover:bg-accent-cyan/15 transition-all flex justify-center items-center h-[44px]"
+                >
+                  INITIALIZE GATE SIGN IN
+                </NavLink>
+              )}
             </div>
           </motion.div>
         </div>

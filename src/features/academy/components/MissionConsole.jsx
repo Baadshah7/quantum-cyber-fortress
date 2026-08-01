@@ -231,7 +231,7 @@ export default function MissionConsole({ mission, onBack }) {
       </div>
 
       {/* Main Mission Screen */}
-      <Card className="p-6 md:p-8 border border-border-subtle relative min-h-[380px] flex flex-col justify-between">
+      <Card className="p-4 sm:p-6 md:p-8 border border-border-subtle relative min-h-[380px] flex flex-col justify-between">
         
         {/* Stage 1: Briefing */}
         {activeStage.id === 'briefing' && (
@@ -381,7 +381,7 @@ export default function MissionConsole({ mission, onBack }) {
                     <span>{q.q}</span>
                   </span>
                   
-                  <div className="flex flex-col gap-2 pl-4">
+                  <div className="flex flex-col gap-2 pl-2 sm:pl-4">
                     {q.options.map((opt, oIdx) => {
                       const isSelected = quizAnswers[qIdx] === oIdx;
                       const isCorrect = q.answerIdx === oIdx;

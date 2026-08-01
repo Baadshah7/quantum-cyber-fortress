@@ -2,11 +2,13 @@ import { useEffect, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { X, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { navigationItems } from './Navbar';
 
 export default function MobileNav({ isOpen, onClose }) {
   const location = useLocation();
   const drawerRef = useRef(null);
+  const { reducedMotion } = useReducedMotion();
 
   useEffect(() => {
     onClose();
@@ -18,25 +20,28 @@ export default function MobileNav({ isOpen, onClose }) {
         onClose();
       }
     };
+    let focusTimeout;
     if (isOpen) {
       window.addEventListener('keydown', handleKeyDown);
-      setTimeout(() => {
+      focusTimeout = setTimeout(() => {
         drawerRef.current?.focus();
       }, 50);
     }
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
+      if (focusTimeout) clearTimeout(focusTimeout);
     };
   }, [isOpen, onClose]);
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 md:hidden flex justify-end">
+        <div className="fixed inset-0 z-50 lg:hidden flex justify-end">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={reducedMotion ? { duration: 0 } : undefined}
             onClick={onClose}
             className="fixed inset-0 bg-bg-primary/80 backdrop-blur-sm cursor-pointer"
           />
@@ -47,7 +52,7 @@ export default function MobileNav({ isOpen, onClose }) {
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
-            transition={{ type: 'tween', ease: 'easeOut', duration: 0.25 }}
+            transition={reducedMotion ? { duration: 0 } : { type: 'tween', ease: 'easeOut', duration: 0.25 }}
             className="relative w-72 h-full bg-bg-secondary border-l border-border-subtle p-6 flex flex-col gap-6 shadow-2xl focus:outline-none z-10"
             role="dialog"
             aria-modal="true"
@@ -62,7 +67,7 @@ export default function MobileNav({ isOpen, onClose }) {
               </div>
               <button
                 onClick={onClose}
-                className="p-1 rounded-btn text-text-secondary hover:text-text-primary hover:bg-bg-tertiary focus-visible:outline-2 focus-visible:outline-accent-cyan cursor-pointer transition-colors"
+                className="w-11 h-11 flex items-center justify-center rounded-btn text-text-secondary hover:text-text-primary hover:bg-bg-tertiary focus-visible:outline-2 focus-visible:outline-accent-cyan cursor-pointer transition-colors"
                 aria-label="Close menu"
               >
                 <X className="w-5 h-5" />
@@ -77,7 +82,7 @@ export default function MobileNav({ isOpen, onClose }) {
                     to={item.path}
                     end={item.path === '/'}
                     className={({ isActive }) => 
-                      `px-4 py-3 rounded-btn transition-all duration-200 border w-full flex ${
+                      `px-4 py-3.5 rounded-btn transition-all duration-200 border w-full flex items-center ${
                         isActive
                           ? 'bg-bg-tertiary border-accent-cyan text-accent-cyan shadow-glow-cyan font-medium'
                           : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-bg-tertiary/40'

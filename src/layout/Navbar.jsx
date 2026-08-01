@@ -27,7 +27,7 @@ export default function Navbar({ reducedMotion, toggleReducedMotion, onOpenMobil
           </span>
         </NavLink>
 
-        <div className="hidden md:flex items-center gap-2 font-ui text-sm">
+        <div className="hidden lg:flex items-center gap-2 font-ui text-sm">
           {navigationItems.map((item) => {
             return (
               <NavLink
@@ -72,7 +72,7 @@ export default function Navbar({ reducedMotion, toggleReducedMotion, onOpenMobil
 
           <button
             onClick={onOpenMobileMenu}
-            className="md:hidden p-1.5 rounded-btn text-text-secondary hover:text-text-primary hover:bg-bg-tertiary focus-visible:outline-2 focus-visible:outline-accent-cyan cursor-pointer transition-colors"
+            className="lg:hidden w-11 h-11 flex items-center justify-center rounded-btn text-text-secondary hover:text-text-primary hover:bg-bg-tertiary focus-visible:outline-2 focus-visible:outline-accent-cyan cursor-pointer transition-colors"
             aria-label="Open navigation menu"
           >
             <Menu className="w-6 h-6" />

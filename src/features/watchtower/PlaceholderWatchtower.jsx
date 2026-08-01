@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Card } from '@/design-system/components/Card';
 import { Badge } from '@/design-system/components/Badge';
 import { Skeleton } from '@/design-system/components/Skeleton';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 
 import { 
@@ -88,14 +89,19 @@ const MOCK_LOG_TEMPLATES = [
 // Self-contained CVEThreatRadar component
 function CVEThreatRadar({ cves, loading }) {
   const [rotation, setRotation] = useState(0);
+  const { reducedMotion } = useReducedMotion();
 
   // Rotate the conic gradient scan sweep overlay
   useEffect(() => {
+    if (reducedMotion) {
+      setRotation(0);
+      return;
+    }
     const interval = setInterval(() => {
       setRotation((prev) => (prev + 3) % 360);
     }, 40);
     return () => clearInterval(interval);
-  }, []);
+  }, [reducedMotion]);
 
   const categoriesConfig = [
     { name: 'Decentralized Auth Service', shortName: 'Decentralized Auth', fallbackId: 'CVE-2026-1044', fallbackScore: 98 },
@@ -170,20 +176,22 @@ function CVEThreatRadar({ cves, loading }) {
     return (
       <g key={`dot-${payload.name}`}>
         {/* Pulsing outer ring */}
-        <circle cx={cx} cy={cy} r={3.5} fill={hex} opacity={0.6}>
-          <animate 
-            attributeName="r" 
-            values="3.5;10;3.5" 
-            dur="2s" 
-            repeatCount="indefinite" 
-          />
-          <animate 
-            attributeName="opacity" 
-            values="0.6;0;0.6" 
-            dur="2s" 
-            repeatCount="indefinite" 
-          />
-        </circle>
+        {!reducedMotion && (
+          <circle cx={cx} cy={cy} r={3.5} fill={hex} opacity={0.6}>
+            <animate 
+              attributeName="r" 
+              values="3.5;10;3.5" 
+              dur="2s" 
+              repeatCount="indefinite" 
+            />
+            <animate 
+              attributeName="opacity" 
+              values="0.6;0;0.6" 
+              dur="2s" 
+              repeatCount="indefinite" 
+            />
+          </circle>
+        )}
         {/* Solid center dot */}
         <circle 
           cx={cx} 
@@ -198,7 +206,7 @@ function CVEThreatRadar({ cves, loading }) {
   };
 
   return (
-    <Card className="p-6 border border-border-subtle flex flex-col gap-4 bg-bg-secondary/20 relative overflow-hidden">
+    <Card className="p-4 sm:p-5 md:p-6 border border-border-subtle flex flex-col gap-4 bg-bg-secondary/20 relative overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between z-10">
         <div className="flex items-center gap-2">
@@ -212,18 +220,16 @@ function CVEThreatRadar({ cves, loading }) {
       </div>
 
       {/* Radar Chart Display */}
-      <div className="flex-1 flex flex-col justify-center min-h-[220px]">
+      <div className="flex-1 flex flex-col justify-center h-[220px]">
         {loading ? (
-          <div className="flex flex-col gap-3">
-            <div className="text-center py-2 text-xs font-mono text-text-muted animate-pulse">
+          <div className="flex flex-col items-center justify-center gap-3 h-full">
+            <div className="w-24 h-24 rounded-full border border-dashed border-accent-cyan/30 animate-spin" />
+            <div className="text-center text-xs font-mono text-text-muted animate-pulse">
               Calibrating threat radar...
             </div>
-            <Skeleton className="h-6 w-full animate-pulse" />
-            <Skeleton className="h-6 w-full animate-pulse" />
-            <Skeleton className="h-6 w-full animate-pulse" />
           </div>
         ) : (
-          <div className="relative w-full h-[220px]">
+          <div className="relative w-full h-full">
             {/* Scan sweep overlay */}
             <div 
               className="absolute rounded-full pointer-events-none border border-accent-cyan/15 z-10"
@@ -250,7 +256,7 @@ function CVEThreatRadar({ cves, loading }) {
               <span className={`text-sm font-mono font-bold leading-none mt-0.5 ${avgColors.text}`}>{avgSev}</span>
             </div>
 
-            <ResponsiveContainer width="100%" height={220}>
+            <ResponsiveContainer width="100%" height="100%">
               <RadarChart cx="50%" cy="50%" outerRadius={75} data={radarData}>
                 <PolarGrid stroke="rgba(34, 211, 238, 0.12)" gridType="circle" />
                 <PolarAngleAxis 
@@ -277,8 +283,20 @@ function CVEThreatRadar({ cves, loading }) {
         )}
       </div>
 
-      {/* Legend list */}
-      {!loading && (
+      {/* Legend list (Stable Height placeholders when loading) */}
+      {loading ? (
+        <div className="flex flex-col gap-1.5 border-t border-border-subtle/30 pt-3">
+          {Array.from({ length: 4 }).map((_, idx) => (
+            <div key={idx} className="flex justify-between items-center py-1">
+              <div className="flex items-center gap-2 w-2/3">
+                <Skeleton className="h-1.5 w-1.5 rounded-full shrink-0 animate-pulse" />
+                <Skeleton className="h-3 w-full rounded-sm animate-pulse" />
+              </div>
+              <Skeleton className="h-3 w-8 rounded-sm animate-pulse" />
+            </div>
+          ))}
+        </div>
+      ) : (
         <div className="flex flex-col gap-1.5 border-t border-border-subtle/30 pt-3">
           {radarData.map((item) => {
             const { hex, text } = getSeverityColors(item.score);
@@ -287,16 +305,18 @@ function CVEThreatRadar({ cves, loading }) {
                 key={item.name} 
                 className="flex items-center justify-between text-[11px] font-mono py-1 border-b border-border-subtle/5 last:border-0"
               >
-                <div className="flex items-center gap-2">
-                  <span 
-                    className="w-1.5 h-1.5 rounded-full inline-block" 
-                    style={{ 
-                      backgroundColor: hex,
-                      boxShadow: `0 0 6px ${hex}`
-                    }} 
-                  />
-                  <span className="text-text-secondary font-medium">{item.name}</span>
-                  <span className="text-text-muted text-[10px]">({item.cveId})</span>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <span 
+                      className="w-1.5 h-1.5 rounded-full inline-block" 
+                      style={{ 
+                        backgroundColor: hex,
+                        boxShadow: `0 0 6px ${hex}`
+                      }} 
+                    />
+                    <span className="text-text-secondary font-medium">{item.name}</span>
+                  </div>
+                  <span className="text-text-muted text-[10px] sm:ml-0 ml-3">({item.cveId})</span>
                 </div>
                 <span className={`font-bold ${text}`}>{item.score}</span>
               </div>
@@ -414,7 +434,7 @@ export default function PlaceholderWatchtower() {
   return (
     <div className="flex-1 flex flex-col gap-8 pb-12">
       {/* Header Panel */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-6 glassmorphism rounded-card border border-border-subtle relative overflow-hidden">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-4 md:p-6 glassmorphism rounded-card border border-border-subtle relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-accent-cyan/5 rounded-full blur-3xl pointer-events-none" />
         <div className="flex items-center gap-4">
           <div className="p-3 bg-accent-cyan/15 rounded-btn text-accent-cyan border border-accent-cyan/20">
@@ -429,12 +449,12 @@ export default function PlaceholderWatchtower() {
             </p>
           </div>
         </div>
-        <div className="flex gap-4 font-mono text-[10px]">
-          <div className="flex flex-col bg-bg-secondary/40 border border-border-subtle px-3 py-1.5 rounded-btn">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 font-mono text-[10px] w-full sm:w-auto">
+          <div className="flex flex-col bg-bg-secondary/40 border border-border-subtle px-3 py-1.5 rounded-btn flex-1 sm:flex-initial">
             <span className="text-text-muted">INTELLIGENCE SYNC</span>
             <span className="text-accent-cyan font-bold text-sm mt-0.5 animate-pulse">SYNCHRONIZED</span>
           </div>
-          <div className="flex flex-col bg-bg-secondary/40 border border-border-subtle px-3 py-1.5 rounded-btn">
+          <div className="flex flex-col bg-bg-secondary/40 border border-border-subtle px-3 py-1.5 rounded-btn flex-1 sm:flex-initial">
             <span className="text-text-muted">GLOBAL ATTACK LEVEL</span>
             <span className="text-status-warning font-bold text-sm mt-0.5">ELEVATED (TIER III)</span>
           </div>
@@ -448,7 +468,7 @@ export default function PlaceholderWatchtower() {
         <CVEThreatRadar cves={cves} loading={loading} />
 
         {/* Live Intrusion logs Terminal */}
-        <Card className="p-6 border border-border-subtle flex flex-col gap-4 bg-bg-primary/90 relative overflow-hidden">
+        <Card className="p-4 sm:p-5 md:p-6 border border-border-subtle flex flex-col gap-4 bg-bg-primary/90 relative overflow-hidden">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <TermIcon className="w-4.5 h-4.5 text-accent-cyan" />
@@ -484,7 +504,7 @@ export default function PlaceholderWatchtower() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* CVE Threat Advisories Database */}
-        <Card className="lg:col-span-2 p-6 border border-border-subtle flex flex-col gap-4">
+        <Card className="lg:col-span-2 p-4 sm:p-5 md:p-6 border border-border-subtle flex flex-col gap-4">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
             <div className="flex items-center gap-2">
               <ShieldAlert className="w-4.5 h-4.5 text-accent-cyan" />
@@ -506,16 +526,16 @@ export default function PlaceholderWatchtower() {
 
           <div className="h-[1px] bg-border-subtle w-full" />
 
-          {/* List of CVEs */}
-          <div className="flex flex-col gap-3 max-h-[300px] overflow-y-auto pr-1">
+          {/* List of CVEs (Stable Height) */}
+          <div className="flex flex-col gap-3 h-[300px] overflow-y-auto pr-1">
             {loading ? (
               <div className="flex flex-col gap-3">
                 <div className="text-center py-2 text-xs font-mono text-text-muted animate-pulse">
                   Loading Live CISA Threat Intel Feed...
                 </div>
-                <Skeleton className="h-20 w-full" />
-                <Skeleton className="h-20 w-full" />
-                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full animate-pulse" />
+                <Skeleton className="h-20 w-full animate-pulse" />
+                <Skeleton className="h-20 w-full animate-pulse" />
               </div>
             ) : (
               <>
@@ -524,21 +544,21 @@ export default function PlaceholderWatchtower() {
                     key={cve.id} 
                     className="p-3 bg-bg-secondary/40 border border-border-subtle rounded-btn flex flex-col gap-2 hover:border-accent-cyan/30 transition-colors"
                   >
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                      <div className="flex flex-wrap items-center gap-2">
                         <span className="font-mono text-xs font-bold text-accent-cyan">{cve.id}</span>
                         <h3 className="text-xs font-display font-bold text-text-primary">{cve.title}</h3>
                       </div>
                       {cve.cvss && (
                         <Badge 
                           status={cve.severity === 'critical' ? 'critical' : 'warning'} 
-                          className="text-[9px] font-mono px-2 py-0.5"
+                          className="text-[9px] font-mono px-2 py-0.5 w-fit"
                         >
                           CVSS {cve.cvss}
                         </Badge>
                       )}
                     </div>
-                    <p className="text-[11px] font-ui text-text-secondary leading-normal">{cve.desc}</p>
+                    <p className="text-[11px] font-ui text-text-secondary leading-normal break-words">{cve.desc}</p>
                     <div className="mt-1 flex items-start gap-1 text-[10px] font-mono text-text-muted">
                       <span className="text-accent-violet">REMEDIATION:</span>
                       <span>{cve.mitigation}</span>
@@ -556,7 +576,7 @@ export default function PlaceholderWatchtower() {
         </Card>
 
         {/* Security Intel Advisories Blog */}
-        <Card className="p-6 border border-border-subtle flex flex-col gap-4 bg-bg-secondary/20">
+        <Card className="p-4 sm:p-5 md:p-6 border border-border-subtle flex flex-col gap-4 bg-bg-secondary/20">
           <div className="flex items-center gap-2">
             <BookOpen className="w-4.5 h-4.5 text-accent-cyan" />
             <h2 className="text-sm font-display font-bold text-text-primary">Educational Advisories</h2>
@@ -564,7 +584,7 @@ export default function PlaceholderWatchtower() {
 
           <div className="h-[1px] bg-border-subtle w-full" />
 
-          <div className="flex flex-col gap-4 overflow-y-auto max-h-[300px]">
+          <div className="flex flex-col gap-4 overflow-y-auto h-[300px] pr-1">
             {BLOG_POSTS.map((post, idx) => (
               <div key={idx} className="flex flex-col gap-1.5 group">
                 <div className="flex justify-between items-center text-[10px] font-mono">

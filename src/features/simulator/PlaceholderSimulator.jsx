@@ -279,7 +279,7 @@ export default function PlaceholderSimulator() {
   return (
     <div className="flex-1 flex flex-col gap-8 pb-12">
       {/* Header Panel */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-6 glassmorphism rounded-card border border-border-subtle relative overflow-hidden">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-4 md:p-6 glassmorphism rounded-card border border-border-subtle relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-status-warning/5 rounded-full blur-3xl pointer-events-none" />
         <div className="flex items-center gap-4">
           <div className="p-3 bg-status-warning/15 rounded-btn text-status-warning border border-status-warning/20">
@@ -363,7 +363,7 @@ export default function PlaceholderSimulator() {
 
         {/* Right Side Interactive Workspaces */}
         <div className="lg:col-span-3">
-          <Card className="p-6 border border-border-subtle relative min-h-[400px] flex flex-col justify-between">
+          <Card className="p-5 md:p-6 border border-border-subtle relative min-h-[400px] flex flex-col justify-between">
             
             {/* Password Analyzer */}
             {activeTab === 'password' && (

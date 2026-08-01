@@ -224,7 +224,7 @@ export default function PlaceholderAcademy() {
   return (
     <div className="flex-1 flex flex-col gap-8 pb-12">
       {/* Header Panel */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-6 glassmorphism rounded-card border border-border-subtle relative overflow-hidden">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-4 md:p-6 glassmorphism rounded-card border border-border-subtle relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-accent-violet/5 rounded-full blur-3xl pointer-events-none" />
         <div className="flex items-center gap-4">
           <div className="p-3 bg-accent-violet/15 rounded-btn text-accent-violet border border-accent-violet/20">
@@ -304,27 +304,27 @@ export default function PlaceholderAcademy() {
       {/* Telemetry Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 font-mono text-[10px]">
         
-        <div className="flex flex-col bg-bg-secondary/40 border border-border-subtle p-3 rounded-btn relative overflow-hidden justify-between h-[68px]">
+        <div className="flex flex-col bg-bg-secondary/40 border border-border-subtle py-2.5 px-3 rounded-btn relative overflow-hidden justify-between min-h-[68px] h-auto">
           <span className="text-text-muted">KNOWLEDGE DIVISIONS</span>
           <span className="text-lg font-bold text-accent-cyan mt-1">8</span>
         </div>
 
-        <div className="flex flex-col bg-bg-secondary/40 border border-border-subtle p-3 rounded-btn relative overflow-hidden justify-between h-[68px]">
+        <div className="flex flex-col bg-bg-secondary/40 border border-border-subtle py-2.5 px-3 rounded-btn relative overflow-hidden justify-between min-h-[68px] h-auto">
           <span className="text-text-muted">TRAINING MISSIONS</span>
           <span className="text-lg font-bold text-accent-cyan mt-1">{totalMissions}</span>
         </div>
 
-        <div className="flex flex-col bg-bg-secondary/40 border border-border-subtle p-3 rounded-btn relative overflow-hidden justify-between h-[68px]">
+        <div className="flex flex-col bg-bg-secondary/40 border border-border-subtle py-2.5 px-3 rounded-btn relative overflow-hidden justify-between min-h-[68px] h-auto">
           <span className="text-text-muted">ESTIMATED LEARNING</span>
           <span className="text-lg font-bold text-accent-cyan mt-1">{totalLearningHours} Hrs</span>
         </div>
 
-        <div className="flex flex-col bg-bg-secondary/40 border border-border-subtle p-3 rounded-btn relative overflow-hidden justify-between h-[68px]">
+        <div className="flex flex-col bg-bg-secondary/40 border border-border-subtle py-2.5 px-3 rounded-btn relative overflow-hidden justify-between min-h-[68px] h-auto">
           <span className="text-text-muted">CURRENT RANK</span>
           <span className="text-xs font-bold text-accent-violet mt-1 truncate uppercase">{sentinel.rank}</span>
         </div>
 
-        <div className="flex flex-col bg-bg-secondary/40 border border-border-subtle p-3 rounded-btn relative overflow-hidden justify-between h-[68px]">
+        <div className="flex flex-col bg-bg-secondary/40 border border-border-subtle py-2.5 px-3 rounded-btn relative overflow-hidden justify-between min-h-[68px] h-auto">
           <span className="text-text-muted">ACADEMY STATUS</span>
           <span className="text-xs font-bold text-status-success mt-1 uppercase flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-status-success shadow-[0_0_6px_#34d399]" />
@@ -332,7 +332,7 @@ export default function PlaceholderAcademy() {
           </span>
         </div>
 
-        <div className="flex flex-col bg-bg-secondary/40 border border-border-subtle p-3 rounded-btn relative overflow-hidden justify-between h-[68px]">
+        <div className="flex flex-col bg-bg-secondary/40 border border-border-subtle py-2.5 px-3 rounded-btn relative overflow-hidden justify-between min-h-[68px] h-auto">
           <span className="text-text-muted">PROGRESS STATUS</span>
           <span className="text-lg font-bold text-accent-cyan mt-1">{progressPercent}%</span>
         </div>
@@ -367,7 +367,7 @@ export default function PlaceholderAcademy() {
                 key={div.id}
                 glowHover={true}
                 onClick={() => setSelectedDiv(div)}
-                className="p-6 border border-border-subtle group hover:scale-[1.01] hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col justify-between"
+                className="p-5 md:p-6 border border-border-subtle group hover:scale-[1.01] hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col justify-between"
               >
                 <div className="flex flex-col gap-4">
                   

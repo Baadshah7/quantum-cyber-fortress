@@ -258,7 +258,7 @@ export default function PacketExerciseSandboxPage() {
       </div>
 
       {/* Details Box */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 glassmorphism border border-border-subtle rounded-card">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 sm:p-5 glassmorphism border border-border-subtle rounded-card">
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-2.5">
             <span className="text-[10px] font-mono font-bold tracking-widest text-accent-cyan bg-accent-cyan/10 px-2 py-0.5 border border-accent-cyan/20 rounded-full">
@@ -694,7 +694,7 @@ export default function PacketExerciseSandboxPage() {
         </div>
       ) : (
         <div className="max-w-xl mx-auto w-full py-8">
-          <Card className="p-8 border border-status-success/30 bg-status-success/5 flex flex-col items-center text-center gap-6 relative overflow-hidden">
+          <Card className="p-6 sm:p-8 border border-status-success/30 bg-status-success/5 flex flex-col items-center text-center gap-6 relative overflow-hidden">
             <div className="absolute -top-24 -left-24 w-48 h-48 bg-status-success/10 rounded-full blur-3xl pointer-events-none"></div>
             <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-accent-cyan/10 rounded-full blur-3xl pointer-events-none"></div>
 

@@ -136,6 +136,7 @@ export default function PlaceholderWatchtower() {
             title: v.vulnerabilityName,
             desc: v.shortDescription,
             mitigation: v.requiredAction,
+            dateAdded: v.dateAdded, // added for radar distance calculation
             severity: null, // No severity directly in KEV feed
             cvss: null      // No CVSS directly in KEV feed
           }));
@@ -170,6 +171,97 @@ export default function PlaceholderWatchtower() {
       cve.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       cve.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Deterministic angle from CVE ID string to keep blips stable
+  const getAngleFromId = (id) => {
+    let hash = 0;
+    for (let i = 0; i < id.length; i++) {
+      hash = id.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return Math.abs(hash % 360) * (Math.PI / 180);
+  };
+
+  // Helper to map and render threat dots on radar
+  const getRadarBlips = () => {
+    const isUsingRealData = cves.length > 0 && cves[0].id !== 'CVE-2026-1044';
+
+    if (loading || !isUsingRealData) {
+      // Fallback state: original decorative static dots
+      return (
+        <>
+          <div className="absolute top-8 left-16 w-2 h-2 rounded-full bg-status-critical shadow-[0_0_8px_#F87171] animate-ping" />
+          <div className="absolute top-12 left-16 w-2 h-2 rounded-full bg-status-critical" />
+
+          <div className="absolute bottom-16 right-12 w-1.5 h-1.5 rounded-full bg-status-warning shadow-[0_0_8px_#FBBF24] animate-ping" style={{ animationDelay: '1.5s' }} />
+          <div className="absolute bottom-20 right-12 w-1.5 h-1.5 rounded-full bg-status-warning" />
+
+          <div className="absolute top-24 right-16 w-2 h-2 rounded-full bg-status-success shadow-[0_0_8px_#34D399] animate-ping" style={{ animationDelay: '3.2s' }} />
+          <div className="absolute top-28 right-16 w-2 h-2 rounded-full bg-status-success" />
+        </>
+      );
+    }
+
+    // Dynamic CISA KEV entries positioning
+    const dates = cves.map(c => new Date(c.dateAdded || Date.now()).getTime());
+    const minTime = Math.min(...dates);
+    const maxTime = Math.max(...dates);
+
+    return cves.map((cve, idx) => {
+      const angle = getAngleFromId(cve.id);
+      
+      const cveTime = new Date(cve.dateAdded || Date.now()).getTime();
+      let r = 60;
+      if (maxTime !== minTime) {
+        const ratio = (cveTime - minTime) / (maxTime - minTime);
+        r = 90 - (ratio * 70); // Keep radius within safe range: 20px (newest) to 90px (oldest)
+      }
+
+      // Convert polar to cartesian coordinates relative to center (0, 0)
+      const x = r * Math.cos(angle);
+      const y = r * Math.sin(angle);
+
+      // Default severity coloring (since CISA KEV doesn't specify CVSS)
+      let colorClass = 'bg-accent-cyan';
+      let glowColor = '#22d3ee';
+      
+      if (cve.severity === 'critical') {
+        colorClass = 'bg-status-critical';
+        glowColor = '#F87171';
+      } else if (cve.severity === 'warning') {
+        colorClass = 'bg-status-warning';
+        glowColor = '#FBBF24';
+      }
+
+      return (
+        <div key={cve.id}>
+          {/* Pulsating radar ping */}
+          <div 
+            className="absolute rounded-full animate-ping pointer-events-none"
+            style={{
+              left: `calc(50% + ${x}px - 4px)`,
+              top: `calc(50% + ${y}px - 4px)`,
+              width: '8px',
+              height: '8px',
+              backgroundColor: glowColor,
+              animationDelay: `${idx * 0.5}s`
+            }}
+          />
+          {/* Main blip */}
+          <div 
+            className={`absolute rounded-full cursor-help hover:scale-150 transition-transform ${colorClass}`}
+            title={`${cve.id}: ${cve.title}`}
+            style={{
+              left: `calc(50% + ${x}px - 3px)`,
+              top: `calc(50% + ${y}px - 3px)`,
+              width: '6px',
+              height: '6px',
+              boxShadow: `0 0 8px ${glowColor}`
+            }}
+          />
+        </div>
+      );
+    });
+  };
 
   return (
     <div className="flex-1 flex flex-col gap-8 pb-12">
@@ -233,19 +325,12 @@ export default function PlaceholderWatchtower() {
               />
 
               {/* Threat Dots */}
-              <div className="absolute top-8 left-16 w-2 h-2 rounded-full bg-status-critical shadow-[0_0_8px_#F87171] animate-ping" />
-              <div className="absolute top-12 left-16 w-2 h-2 rounded-full bg-status-critical" />
-
-              <div className="absolute bottom-16 right-12 w-1.5 h-1.5 rounded-full bg-status-warning shadow-[0_0_8px_#FBBF24] animate-ping" style={{ animationDelay: '1.5s' }} />
-              <div className="absolute bottom-20 right-12 w-1.5 h-1.5 rounded-full bg-status-warning" />
-
-              <div className="absolute top-24 right-16 w-2 h-2 rounded-full bg-status-success shadow-[0_0_8px_#34D399] animate-ping" style={{ animationDelay: '3.2s' }} />
-              <div className="absolute top-28 right-16 w-2 h-2 rounded-full bg-status-success" />
+              {getRadarBlips()}
             </div>
           </div>
 
           <div className="flex justify-between items-center text-[10px] font-mono text-text-muted mt-2 border-t border-border-subtle/30 pt-3">
-            <span>RADAR: 3 ACTIVE SIGNATURES</span>
+            <span>RADAR: {cves.length > 0 && cves[0].id !== 'CVE-2026-1044' ? `${cves.length} ACTIVE SIGNATURES` : '3 ACTIVE SIGNATURES'}</span>
             <span>POLAR COORDINATES: SYNCED</span>
           </div>
         </Card>

@@ -5,7 +5,6 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 font-ui text-xs text-text-muted">
         <div className="flex flex-col gap-1 items-center md:items-start text-center md:text-left">
           <span className="font-semibold text-text-secondary">Quantum Cyber Fortress</span>
-          <span>UID Final Year Capstone Project</span>
         </div>
         
         <div className="flex items-center gap-4">

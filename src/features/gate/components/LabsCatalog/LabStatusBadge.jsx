@@ -1,5 +1,4 @@
 import { Badge } from '@/design-system/components/Badge';
-import { Tooltip } from '@/design-system/components/Tooltip';
 import { iconMap } from './iconMap';
 
 export default function LabStatusBadge({ status, clearance = 'Level II', scoreText }) {
@@ -67,20 +66,18 @@ export default function LabStatusBadge({ status, clearance = 'Level II', scoreTe
   const IconComponent = iconMap[details.iconName] || iconMap.Activity;
 
   return (
-    <Tooltip content={details.tooltip} position="top">
-      <Badge 
-        variant={details.variant} 
-        className="flex items-center gap-1.5 font-mono text-[9px] font-bold px-2 py-0.5 tracking-normal normal-case select-none"
-      >
-        <IconComponent className="w-3 h-3 shrink-0" aria-hidden="true" />
-        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${details.ledClass}`} aria-hidden="true" />
-        <span>{scoreText || details.label}</span>
-        
-        {/* Screen reader fallback for accessible descriptions */}
-        <span className="sr-only">
-          Status is {details.label}. Info: {details.tooltip}
-        </span>
-      </Badge>
-    </Tooltip>
+    <Badge 
+      variant={details.variant} 
+      className="flex items-center gap-1.5 font-mono text-[9px] font-bold px-2 py-0.5 tracking-normal normal-case select-none"
+    >
+      <IconComponent className="w-3 h-3 shrink-0" aria-hidden="true" />
+      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${details.ledClass}`} aria-hidden="true" />
+      <span>{scoreText || details.label}</span>
+      
+      {/* Screen reader fallback for accessible descriptions */}
+      <span className="sr-only">
+        Status is {details.label}. Info: {details.tooltip}
+      </span>
+    </Badge>
   );
 }

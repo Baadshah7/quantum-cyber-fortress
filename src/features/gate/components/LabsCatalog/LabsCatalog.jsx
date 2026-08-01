@@ -57,6 +57,24 @@ export default function LabsCatalog({ isPage = false }) {
           scoreText
         };
       }
+      if (lab.id === 'cli-challenges') {
+        const savedScoreData = localStorage.getItem('qcf_lab_score_cli-challenges');
+        const isCompleted = !!savedScoreData;
+        let scoreText = null;
+        if (savedScoreData) {
+          try {
+            const { score, maxScore } = JSON.parse(savedScoreData);
+            scoreText = `Best Score: ${score}/${maxScore}`;
+          } catch (e) {
+            scoreText = 'Completed';
+          }
+        }
+        return {
+          ...lab,
+          status: isCompleted ? 'completed' : 'available',
+          scoreText
+        };
+      }
       return lab;
     });
   };

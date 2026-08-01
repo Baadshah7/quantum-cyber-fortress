@@ -7,6 +7,7 @@ import LabsPage from '@/features/labs/LabsPage';
 import PlaceholderWatchtower from '@/features/watchtower/PlaceholderWatchtower';
 import LogAnalysisLabPage from '@/features/labs/log-analysis/LogAnalysisLabPage';
 import PacketExerciseSandboxPage from '@/features/labs/packet-sandbox/PacketExerciseSandboxPage';
+import CliChallengesPage from '@/features/labs/cli-challenges/CliChallengesPage';
 
 export const router = createBrowserRouter([
   {
@@ -36,6 +37,10 @@ export const router = createBrowserRouter([
       {
         path: 'labs/packet-sandbox',
         element: <PacketExerciseSandboxPage />,
+      },
+      {
+        path: 'labs/cli-challenges',
+        element: <CliChallengesPage />,
       },
       {
         path: 'arena',

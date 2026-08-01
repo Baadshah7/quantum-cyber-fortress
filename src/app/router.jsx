@@ -9,6 +9,7 @@ import LogAnalysisLabPage from '@/features/labs/log-analysis/LogAnalysisLabPage'
 import PacketExerciseSandboxPage from '@/features/labs/packet-sandbox/PacketExerciseSandboxPage';
 import CliChallengesPage from '@/features/labs/cli-challenges/CliChallengesPage';
 import SecurityQuizzesPage from '@/features/labs/security-quizzes/SecurityQuizzesPage';
+import TerminalSimulationsPage from '@/features/labs/terminal-simulations/TerminalSimulationsPage';
 
 export const router = createBrowserRouter([
   {
@@ -46,6 +47,10 @@ export const router = createBrowserRouter([
       {
         path: 'labs/security-quizzes',
         element: <SecurityQuizzesPage />,
+      },
+      {
+        path: 'labs/terminal-simulations',
+        element: <TerminalSimulationsPage />,
       },
       {
         path: 'arena',

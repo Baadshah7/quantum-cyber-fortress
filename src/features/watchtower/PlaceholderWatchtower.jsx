@@ -206,7 +206,7 @@ function CVEThreatRadar({ cves, loading }) {
   };
 
   return (
-    <Card className="p-4 sm:p-5 md:p-6 border border-border-subtle flex flex-col gap-4 bg-bg-secondary/20 relative overflow-hidden">
+    <Card className="p-4 sm:p-5 md:p-6 border border-border-subtle flex flex-col gap-4 bg-bg-secondary/20 relative overflow-hidden h-[460px] justify-between">
       {/* Header */}
       <div className="flex items-center justify-between z-10">
         <div className="flex items-center gap-2">
@@ -342,7 +342,7 @@ export default function PlaceholderWatchtower() {
   const [searchTerm, setSearchTerm] = useState('');
   const [cves, setCves] = useState(CVES);
   const [loading, setLoading] = useState(true);
-  const logsEndRef = useRef(null);
+  const logContainerRef = useRef(null);
 
   // Generate logs dynamically
   useEffect(() => {
@@ -359,10 +359,7 @@ export default function PlaceholderWatchtower() {
       const randomTemplate = MOCK_LOG_TEMPLATES[Math.floor(Math.random() * MOCK_LOG_TEMPLATES.length)];
       setLogs((prev) => {
         const updated = [...prev, `[${time}] ${randomTemplate}`];
-        if (updated.length > 20) {
-          updated.shift();
-        }
-        return updated;
+        return updated.slice(-50);
       });
     }, 3000);
 
@@ -417,9 +414,18 @@ export default function PlaceholderWatchtower() {
     };
   }, []);
 
-  // Auto-scroll logs
+  // Auto-scroll logs inside local container only (if near bottom)
   useEffect(() => {
-    logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const container = logContainerRef.current;
+    if (!container) return;
+
+    const threshold = 50;
+    const isNearBottom = 
+      container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
+
+    if (isNearBottom) {
+      container.scrollTop = container.scrollHeight;
+    }
   }, [logs]);
 
   // Filter CVEs based on search
@@ -462,13 +468,13 @@ export default function PlaceholderWatchtower() {
       </div>
 
       {/* Row 1: CVE Severity Breakdown & Intrusion Logs */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         
         {/* CVE Severity Breakdown (Radar Threat Intel) */}
         <CVEThreatRadar cves={cves} loading={loading} />
 
         {/* Live Intrusion logs Terminal */}
-        <Card className="p-4 sm:p-5 md:p-6 border border-border-subtle flex flex-col gap-4 bg-bg-primary/90 relative overflow-hidden">
+        <Card className="p-4 sm:p-5 md:p-6 border border-border-subtle flex flex-col gap-4 bg-bg-primary/90 relative overflow-hidden h-[460px] justify-between">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <TermIcon className="w-4.5 h-4.5 text-accent-cyan" />
@@ -477,7 +483,7 @@ export default function PlaceholderWatchtower() {
             <span className="w-2 h-2 rounded-full bg-accent-cyan shadow-[0_0_8px_rgba(34,211,238,0.5)] animate-pulse" />
           </div>
 
-          <div className="flex-1 bg-bg-secondary/60 border border-border-subtle rounded-btn p-4 font-mono text-[10.5px] text-accent-cyan leading-relaxed h-[240px] overflow-y-auto flex flex-col gap-1.5">
+          <div ref={logContainerRef} className="flex-1 bg-bg-secondary/60 border border-border-subtle rounded-btn p-4 font-mono text-[10.5px] text-accent-cyan leading-relaxed overflow-y-auto flex flex-col gap-1.5">
             {logs.map((log, index) => {
               let color = 'text-text-secondary';
               if (log.includes('[ALERT]')) color = 'text-status-critical';
@@ -490,7 +496,6 @@ export default function PlaceholderWatchtower() {
                 </div>
               );
             })}
-            <div ref={logsEndRef} />
           </div>
 
           <div className="text-[10px] font-mono text-text-muted border-t border-border-subtle/30 pt-3">

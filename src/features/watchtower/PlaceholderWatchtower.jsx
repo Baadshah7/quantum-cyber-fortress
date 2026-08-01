@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Card } from '@/design-system/components/Card';
 import { Badge } from '@/design-system/components/Badge';
+import { Skeleton } from '@/design-system/components/Skeleton';
 
 import { motion } from 'framer-motion';
 import { 
@@ -83,6 +84,8 @@ const MOCK_LOG_TEMPLATES = [
 export default function PlaceholderWatchtower() {
   const [logs, setLogs] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [cves, setCves] = useState(CVES);
+  const [loading, setLoading] = useState(true);
   const logsEndRef = useRef(null);
 
   // Generate logs dynamically
@@ -110,13 +113,59 @@ export default function PlaceholderWatchtower() {
     return () => clearInterval(interval);
   }, []);
 
+  // Fetch CISA KEV JSON Feed client-side on mount
+  useEffect(() => {
+    let active = true;
+    const fetchCisaFeed = async () => {
+      try {
+        const response = await fetch('https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (data && data.vulnerabilities && active) {
+          // Sort by dateAdded descending
+          const sorted = data.vulnerabilities.sort(
+            (a, b) => new Date(b.dateAdded) - new Date(a.dateAdded)
+          );
+          // Take the most recent 8 entries
+          const recent = sorted.slice(0, 8);
+          // Map to match the existing card layout
+          const mapped = recent.map((v) => ({
+            id: v.cveID,
+            title: v.vulnerabilityName,
+            desc: v.shortDescription,
+            mitigation: v.requiredAction,
+            severity: null, // No severity directly in KEV feed
+            cvss: null      // No CVSS directly in KEV feed
+          }));
+          setCves(mapped);
+        }
+      } catch (err) {
+        console.warn('Failed to fetch CISA threat feed, using local fallback:', err);
+        if (active) {
+          setCves(CVES);
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchCisaFeed();
+    return () => {
+      active = false;
+    };
+  }, []);
+
   // Auto-scroll logs
   useEffect(() => {
     logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [logs]);
 
   // Filter CVEs based on search
-  const filteredCves = CVES.filter(
+  const filteredCves = cves.filter(
     (cve) => 
       cve.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       cve.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -262,34 +311,49 @@ export default function PlaceholderWatchtower() {
 
           {/* List of CVEs */}
           <div className="flex flex-col gap-3 max-h-[300px] overflow-y-auto pr-1">
-            {filteredCves.map((cve) => (
-              <div 
-                key={cve.id} 
-                className="p-3 bg-bg-secondary/40 border border-border-subtle rounded-btn flex flex-col gap-2 hover:border-accent-cyan/30 transition-colors"
-              >
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-accent-cyan">{cve.id}</span>
-                    <h3 className="text-xs font-display font-bold text-text-primary">{cve.title}</h3>
-                  </div>
-                  <Badge 
-                    status={cve.severity === 'critical' ? 'critical' : 'warning'} 
-                    className="text-[9px] font-mono px-2 py-0.5"
+            {loading ? (
+              <div className="flex flex-col gap-3">
+                <div className="text-center py-2 text-xs font-mono text-text-muted animate-pulse">
+                  Loading Live CISA Threat Intel Feed...
+                </div>
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full" />
+              </div>
+            ) : (
+              <>
+                {filteredCves.map((cve) => (
+                  <div 
+                    key={cve.id} 
+                    className="p-3 bg-bg-secondary/40 border border-border-subtle rounded-btn flex flex-col gap-2 hover:border-accent-cyan/30 transition-colors"
                   >
-                    CVSS {cve.cvss}
-                  </Badge>
-                </div>
-                <p className="text-[11px] font-ui text-text-secondary leading-normal">{cve.desc}</p>
-                <div className="mt-1 flex items-start gap-1 text-[10px] font-mono text-text-muted">
-                  <span className="text-accent-violet">REMEDIATION:</span>
-                  <span>{cve.mitigation}</span>
-                </div>
-              </div>
-            ))}
-            {filteredCves.length === 0 && (
-              <div className="text-center py-6 text-xs font-mono text-text-muted">
-                No matching vulnerabilities found.
-              </div>
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs font-bold text-accent-cyan">{cve.id}</span>
+                        <h3 className="text-xs font-display font-bold text-text-primary">{cve.title}</h3>
+                      </div>
+                      {cve.cvss && (
+                        <Badge 
+                          status={cve.severity === 'critical' ? 'critical' : 'warning'} 
+                          className="text-[9px] font-mono px-2 py-0.5"
+                        >
+                          CVSS {cve.cvss}
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-[11px] font-ui text-text-secondary leading-normal">{cve.desc}</p>
+                    <div className="mt-1 flex items-start gap-1 text-[10px] font-mono text-text-muted">
+                      <span className="text-accent-violet">REMEDIATION:</span>
+                      <span>{cve.mitigation}</span>
+                    </div>
+                  </div>
+                ))}
+                {filteredCves.length === 0 && (
+                  <div className="text-center py-6 text-xs font-mono text-text-muted">
+                    No matching vulnerabilities found.
+                  </div>
+                )}
+              </>
             )}
           </div>
         </Card>

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Card } from '@/design-system/components/Card';
 import { Badge } from '@/design-system/components/Badge';
 import { Skeleton } from '@/design-system/components/Skeleton';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
+import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 
 import { 
   Radio, ShieldAlert, Cpu, Terminal as TermIcon, 
@@ -84,6 +84,238 @@ const MOCK_LOG_TEMPLATES = [
   '[WARN] Suspicious HTTP headers detected by Phishing Inspector. Sender quarantined.',
   '[INFO] Watchtower RSS feed synchronizer: Fetched latest CVE advisory entries'
 ];
+
+// Self-contained CVEThreatRadar component
+function CVEThreatRadar({ cves, loading }) {
+  const [rotation, setRotation] = useState(0);
+
+  // Rotate the conic gradient scan sweep overlay
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRotation((prev) => (prev + 3) % 360);
+    }, 40);
+    return () => clearInterval(interval);
+  }, []);
+
+  const categoriesConfig = [
+    { name: 'Decentralized Auth Service', shortName: 'Decentralized Auth', fallbackId: 'CVE-2026-1044', fallbackScore: 98 },
+    { name: 'RBAC Privileges Middleware', shortName: 'RBAC Middleware', fallbackId: 'CVE-2026-1337', fallbackScore: 93 },
+    { name: 'Cryptographic Packet Parser', shortName: 'Packet Parser', fallbackId: 'CVE-2026-8821', fallbackScore: 65 },
+    { name: 'Token Exchange Gateway', shortName: 'Token Gateway', fallbackId: 'CVE-2026-7719', fallbackScore: 75 }
+  ];
+
+  // Resolve CVE details from cves state or fallbacks
+  const radarData = categoriesConfig.map((config) => {
+    let matched = cves.find(
+      (c) =>
+        c.vendor?.toLowerCase() === config.name.toLowerCase() ||
+        c.title?.toLowerCase().includes(config.name.toLowerCase())
+    );
+    if (!matched) {
+      matched = CVES.find(
+        (c) =>
+          c.vendor?.toLowerCase() === config.name.toLowerCase() ||
+          c.title?.toLowerCase().includes(config.name.toLowerCase())
+      );
+    }
+
+    const cveId = matched ? matched.id : config.fallbackId;
+    let score = config.fallbackScore;
+    if (matched && matched.cvss) {
+      score = Math.round(parseFloat(matched.cvss) * 10);
+    }
+
+    return {
+      name: config.name,
+      shortName: config.shortName,
+      cveId,
+      score,
+    };
+  });
+
+  // Calculate average severity
+  const avgSev = Math.round(
+    radarData.reduce((acc, curr) => acc + curr.score, 0) / radarData.length
+  );
+
+  // Severity color coding helper
+  const getSeverityColors = (val) => {
+    if (val >= 85) {
+      return {
+        hex: '#F87171',
+        text: 'text-status-critical',
+      };
+    } else if (val >= 70) {
+      return {
+        hex: '#FBBF24',
+        text: 'text-status-warning',
+      };
+    } else {
+      return {
+        hex: '#22D3EE',
+        text: 'text-accent-cyan',
+      };
+    }
+  };
+
+  const avgColors = getSeverityColors(avgSev);
+
+  // Custom dot renderer for radar points
+  const renderCustomDot = (props) => {
+    const { cx, cy, payload } = props;
+    if (cx === undefined || cy === undefined || !payload) return null;
+
+    const { hex } = getSeverityColors(payload.score);
+
+    return (
+      <g key={`dot-${payload.name}`}>
+        {/* Pulsing outer ring */}
+        <circle cx={cx} cy={cy} r={3.5} fill={hex} opacity={0.6}>
+          <animate 
+            attributeName="r" 
+            values="3.5;10;3.5" 
+            dur="2s" 
+            repeatCount="indefinite" 
+          />
+          <animate 
+            attributeName="opacity" 
+            values="0.6;0;0.6" 
+            dur="2s" 
+            repeatCount="indefinite" 
+          />
+        </circle>
+        {/* Solid center dot */}
+        <circle 
+          cx={cx} 
+          cy={cy} 
+          r={4} 
+          fill={hex} 
+          stroke="#0F1420"
+          strokeWidth={1.5}
+        />
+      </g>
+    );
+  };
+
+  return (
+    <Card className="p-6 border border-border-subtle flex flex-col gap-4 bg-bg-secondary/20 relative overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between z-10">
+        <div className="flex items-center gap-2">
+          <Cpu className="w-4.5 h-4.5 text-accent-cyan" />
+          <h2 className="text-sm font-display font-bold text-text-primary">CVE Severity Breakdown</h2>
+        </div>
+        <Badge status="success" className="text-[9px] flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse" />
+          Live Intel
+        </Badge>
+      </div>
+
+      {/* Radar Chart Display */}
+      <div className="flex-1 flex flex-col justify-center min-h-[220px]">
+        {loading ? (
+          <div className="flex flex-col gap-3">
+            <div className="text-center py-2 text-xs font-mono text-text-muted animate-pulse">
+              Calibrating threat radar...
+            </div>
+            <Skeleton className="h-6 w-full animate-pulse" />
+            <Skeleton className="h-6 w-full animate-pulse" />
+            <Skeleton className="h-6 w-full animate-pulse" />
+          </div>
+        ) : (
+          <div className="relative w-full h-[220px]">
+            {/* Scan sweep overlay */}
+            <div 
+              className="absolute rounded-full pointer-events-none border border-accent-cyan/15 z-10"
+              style={{
+                width: '150px',
+                height: '150px',
+                left: 'calc(50% - 75px)',
+                top: 'calc(50% - 75px)',
+                background: 'conic-gradient(from 0deg, rgba(34, 211, 238, 0.25) 0deg, rgba(34, 211, 238, 0.05) 45deg, rgba(34, 211, 238, 0) 180deg)',
+                transform: `rotate(${rotation}deg)`,
+                transformOrigin: 'center',
+              }}
+            />
+            
+            {/* Centered AVG SEV readout */}
+            <div 
+              className="absolute w-14 h-14 rounded-full bg-bg-secondary/95 border border-border-subtle/80 flex flex-col items-center justify-center shadow-lg shadow-black/85 z-20 pointer-events-none"
+              style={{
+                left: 'calc(50% - 28px)',
+                top: 'calc(50% - 28px)',
+              }}
+            >
+              <span className="text-[8px] font-mono text-text-muted uppercase tracking-wider scale-[0.9]">Avg Sev</span>
+              <span className={`text-sm font-mono font-bold leading-none mt-0.5 ${avgColors.text}`}>{avgSev}</span>
+            </div>
+
+            <ResponsiveContainer width="100%" height={220}>
+              <RadarChart cx="50%" cy="50%" outerRadius={75} data={radarData}>
+                <PolarGrid stroke="rgba(34, 211, 238, 0.12)" gridType="circle" />
+                <PolarAngleAxis 
+                  dataKey="shortName" 
+                  tick={{ fill: '#94a3b8', fontSize: 9, fontFamily: 'monospace' }}
+                />
+                <PolarRadiusAxis 
+                  angle={90} 
+                  domain={[0, 100]} 
+                  tick={false} 
+                  axisLine={false} 
+                />
+                <Radar 
+                  name="Severity" 
+                  dataKey="score" 
+                  stroke="#22d3ee" 
+                  fill="#22d3ee" 
+                  fillOpacity={0.12} 
+                  dot={renderCustomDot} 
+                />
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+      </div>
+
+      {/* Legend list */}
+      {!loading && (
+        <div className="flex flex-col gap-1.5 border-t border-border-subtle/30 pt-3">
+          {radarData.map((item) => {
+            const { hex, text } = getSeverityColors(item.score);
+            return (
+              <div 
+                key={item.name} 
+                className="flex items-center justify-between text-[11px] font-mono py-1 border-b border-border-subtle/5 last:border-0"
+              >
+                <div className="flex items-center gap-2">
+                  <span 
+                    className="w-1.5 h-1.5 rounded-full inline-block" 
+                    style={{ 
+                      backgroundColor: hex,
+                      boxShadow: `0 0 6px ${hex}`
+                    }} 
+                  />
+                  <span className="text-text-secondary font-medium">{item.name}</span>
+                  <span className="text-text-muted text-[10px]">({item.cveId})</span>
+                </div>
+                <span className={`font-bold ${text}`}>{item.score}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Footer */}
+      <div className="flex justify-between items-center text-[10px] font-mono text-text-muted mt-2 border-t border-border-subtle/30 pt-3">
+        <span>SOURCE: CISA KEV CATALOG</span>
+        <span className="flex items-center gap-1">
+          <ShieldAlert className="w-3.5 h-3.5 text-status-warning" />
+          TOTAL VECTORS: {radarData.length}
+        </span>
+      </div>
+    </Card>
+  );
+}
 
 export default function PlaceholderWatchtower() {
   const [logs, setLogs] = useState([]);
@@ -177,31 +409,7 @@ export default function PlaceholderWatchtower() {
       cve.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Group and count CVEs by vendor for the charting breakdown
-  const getChartData = () => {
-    const counts = {};
-    cves.forEach((cve) => {
-      const vendorName = cve.vendor || 'Unknown';
-      counts[vendorName] = (counts[vendorName] || 0) + 1;
-    });
 
-    return Object.entries(counts)
-      .map(([name, value]) => ({ name, value }))
-      .sort((a, b) => b.value - a.value);
-  };
-
-  // Recharts Custom Tooltip
-  const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-[#0f172a] border border-border-subtle p-2 rounded-btn font-mono text-[10px] text-text-primary shadow-lg">
-          <p className="font-bold text-accent-cyan">{payload[0].payload.name}</p>
-          <p className="text-text-secondary mt-0.5">{payload[0].value} Active Exploit(s)</p>
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div className="flex-1 flex flex-col gap-8 pb-12">
@@ -236,58 +444,8 @@ export default function PlaceholderWatchtower() {
       {/* Row 1: CVE Severity Breakdown & Intrusion Logs */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
-        {/* CVE Severity Breakdown (Grouped by Vendor) */}
-        <Card className="p-6 border border-border-subtle flex flex-col gap-4 bg-bg-secondary/20 relative overflow-hidden">
-          <div className="flex items-center justify-between z-10">
-            <div className="flex items-center gap-2">
-              <Cpu className="w-4.5 h-4.5 text-accent-cyan" />
-              <h2 className="text-sm font-display font-bold text-text-primary">CVE Severity Breakdown</h2>
-            </div>
-            <Badge status="success" className="text-[9px]">Live Intel</Badge>
-          </div>
-
-          <div className="flex-1 flex flex-col justify-center min-h-[220px]">
-            {loading ? (
-              <div className="flex flex-col gap-3">
-                <div className="text-center py-2 text-xs font-mono text-text-muted animate-pulse">
-                  Aggregating vendor threats...
-                </div>
-                <Skeleton className="h-6 w-full" />
-                <Skeleton className="h-6 w-full" />
-                <Skeleton className="h-6 w-full" />
-              </div>
-            ) : getChartData().length === 0 ? (
-              <div className="text-center text-xs font-mono text-text-muted py-6">
-                No data available
-              </div>
-            ) : (
-              <ResponsiveContainer width="100%" height={220}>
-                <BarChart
-                  data={getChartData()}
-                  layout="vertical"
-                  margin={{ top: 10, right: 10, left: 10, bottom: 5 }}
-                >
-                  <XAxis type="number" hide />
-                  <YAxis 
-                    dataKey="name" 
-                    type="category" 
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: '#94a3b8', fontSize: 10, fontFamily: 'monospace' }}
-                    width={90}
-                  />
-                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(34, 211, 238, 0.05)' }} />
-                  <Bar dataKey="value" fill="#22d3ee" radius={[0, 4, 4, 0]} barSize={12} />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </div>
-
-          <div className="flex justify-between items-center text-[10px] font-mono text-text-muted mt-2 border-t border-border-subtle/30 pt-3">
-            <span>SOURCE: CISA KEV CATALOG</span>
-            <span>TOTAL VENDORS: {loading ? '...' : new Set(cves.map(c => c.vendor || 'Unknown')).size}</span>
-          </div>
-        </Card>
+        {/* CVE Severity Breakdown (Radar Threat Intel) */}
+        <CVEThreatRadar cves={cves} loading={loading} />
 
         {/* Live Intrusion logs Terminal */}
         <Card className="p-6 border border-border-subtle flex flex-col gap-4 bg-bg-primary/90 relative overflow-hidden">

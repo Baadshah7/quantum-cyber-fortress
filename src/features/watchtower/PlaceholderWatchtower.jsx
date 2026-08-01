@@ -15,7 +15,7 @@ const CVES = [
     title: 'Decentralized Auth Token RCE',
     severity: 'critical',
     cvss: '9.8',
-    vendor: 'AuthSecurity',
+    vendor: 'Decentralized Auth Service',
     desc: 'A remote code execution vulnerability exists in decentralized session token validators. Attacking nodes can pass malformed JSON objects to overflow validation memory.',
     mitigation: 'Update session-security packages to v1.2.4 or filter invalid headers at the Gate.'
   },
@@ -24,7 +24,7 @@ const CVES = [
     title: 'Role-Based Authentication Bypass',
     severity: 'critical',
     cvss: '9.3',
-    vendor: 'RBAC Middleware',
+    vendor: 'RBAC Privileges Middleware',
     desc: 'An authorization bypass allows user privileges to be elevated to administrative roles due to loose type comparisons in RBAC permissions middleware.',
     mitigation: 'Implement strict triple-equals type validation and audit user group parameters.'
   },
@@ -33,7 +33,7 @@ const CVES = [
     title: 'Cryptographic Packet Parser DoS',
     severity: 'warning',
     cvss: '6.5',
-    vendor: 'CipherLib',
+    vendor: 'Cryptographic Packet Parser',
     desc: 'A denial of service vulnerability exists in packet assembly libraries. Sending a malformed cipher packet triggers an infinite loop leading to thread starvation.',
     mitigation: 'Implement packet size validation checks and set maximum parse timeouts.'
   },
@@ -42,7 +42,7 @@ const CVES = [
     title: 'Token Exchange CSRF Vulnerability',
     severity: 'warning',
     cvss: '7.5',
-    vendor: 'TokenServices',
+    vendor: 'Token Exchange Gateway',
     desc: 'Cross-Site Request Forgery (CSRF) is possible during user token exchange operations. Session validation lacks secure SameSite cookie structures.',
     mitigation: 'Set cookie attributes to SameSite=Strict and enforce custom authorization headers.'
   }
@@ -90,7 +90,6 @@ export default function PlaceholderWatchtower() {
   const [searchTerm, setSearchTerm] = useState('');
   const [cves, setCves] = useState(CVES);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
   const logsEndRef = useRef(null);
 
   // Generate logs dynamically
@@ -147,13 +146,11 @@ export default function PlaceholderWatchtower() {
             cvss: null      // No CVSS directly in KEV feed
           }));
           setCves(mapped);
-          setError(false);
         }
       } catch (err) {
         console.warn('Failed to fetch CISA threat feed, using local fallback:', err);
         if (active) {
           setCves(CVES);
-          setError(true);
         }
       } finally {
         if (active) {
@@ -259,7 +256,7 @@ export default function PlaceholderWatchtower() {
                 <Skeleton className="h-6 w-full" />
                 <Skeleton className="h-6 w-full" />
               </div>
-            ) : error ? (
+            ) : getChartData().length === 0 ? (
               <div className="text-center text-xs font-mono text-text-muted py-6">
                 No data available
               </div>
@@ -288,7 +285,7 @@ export default function PlaceholderWatchtower() {
 
           <div className="flex justify-between items-center text-[10px] font-mono text-text-muted mt-2 border-t border-border-subtle/30 pt-3">
             <span>SOURCE: CISA KEV CATALOG</span>
-            <span>TOTAL VENDORS: {loading || error ? '...' : new Set(cves.map(c => c.vendor || 'Unknown')).size}</span>
+            <span>TOTAL VENDORS: {loading ? '...' : new Set(cves.map(c => c.vendor || 'Unknown')).size}</span>
           </div>
         </Card>
 

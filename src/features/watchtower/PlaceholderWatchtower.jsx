@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Card } from '@/design-system/components/Card';
 import { Badge } from '@/design-system/components/Badge';
 import { Skeleton } from '@/design-system/components/Skeleton';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
 
-import { motion } from 'framer-motion';
 import { 
   Radio, ShieldAlert, Cpu, Terminal as TermIcon, 
   Search, BookOpen 
@@ -15,6 +15,7 @@ const CVES = [
     title: 'Decentralized Auth Token RCE',
     severity: 'critical',
     cvss: '9.8',
+    vendor: 'AuthSecurity',
     desc: 'A remote code execution vulnerability exists in decentralized session token validators. Attacking nodes can pass malformed JSON objects to overflow validation memory.',
     mitigation: 'Update session-security packages to v1.2.4 or filter invalid headers at the Gate.'
   },
@@ -23,6 +24,7 @@ const CVES = [
     title: 'Role-Based Authentication Bypass',
     severity: 'critical',
     cvss: '9.3',
+    vendor: 'RBAC Middleware',
     desc: 'An authorization bypass allows user privileges to be elevated to administrative roles due to loose type comparisons in RBAC permissions middleware.',
     mitigation: 'Implement strict triple-equals type validation and audit user group parameters.'
   },
@@ -31,6 +33,7 @@ const CVES = [
     title: 'Cryptographic Packet Parser DoS',
     severity: 'warning',
     cvss: '6.5',
+    vendor: 'CipherLib',
     desc: 'A denial of service vulnerability exists in packet assembly libraries. Sending a malformed cipher packet triggers an infinite loop leading to thread starvation.',
     mitigation: 'Implement packet size validation checks and set maximum parse timeouts.'
   },
@@ -39,6 +42,7 @@ const CVES = [
     title: 'Token Exchange CSRF Vulnerability',
     severity: 'warning',
     cvss: '7.5',
+    vendor: 'TokenServices',
     desc: 'Cross-Site Request Forgery (CSRF) is possible during user token exchange operations. Session validation lacks secure SameSite cookie structures.',
     mitigation: 'Set cookie attributes to SameSite=Strict and enforce custom authorization headers.'
   }
@@ -86,6 +90,7 @@ export default function PlaceholderWatchtower() {
   const [searchTerm, setSearchTerm] = useState('');
   const [cves, setCves] = useState(CVES);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const logsEndRef = useRef(null);
 
   // Generate logs dynamically
@@ -137,15 +142,18 @@ export default function PlaceholderWatchtower() {
             desc: v.shortDescription,
             mitigation: v.requiredAction,
             dateAdded: v.dateAdded, // added for radar distance calculation
+            vendor: v.vendorProject, // added for chart grouping
             severity: null, // No severity directly in KEV feed
             cvss: null      // No CVSS directly in KEV feed
           }));
           setCves(mapped);
+          setError(false);
         }
       } catch (err) {
         console.warn('Failed to fetch CISA threat feed, using local fallback:', err);
         if (active) {
           setCves(CVES);
+          setError(true);
         }
       } finally {
         if (active) {
@@ -172,95 +180,30 @@ export default function PlaceholderWatchtower() {
       cve.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Deterministic angle from CVE ID string to keep blips stable
-  const getAngleFromId = (id) => {
-    let hash = 0;
-    for (let i = 0; i < id.length; i++) {
-      hash = id.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return Math.abs(hash % 360) * (Math.PI / 180);
+  // Group and count CVEs by vendor for the charting breakdown
+  const getChartData = () => {
+    const counts = {};
+    cves.forEach((cve) => {
+      const vendorName = cve.vendor || 'Unknown';
+      counts[vendorName] = (counts[vendorName] || 0) + 1;
+    });
+
+    return Object.entries(counts)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value);
   };
 
-  // Helper to map and render threat dots on radar
-  const getRadarBlips = () => {
-    const isUsingRealData = cves.length > 0 && cves[0].id !== 'CVE-2026-1044';
-
-    if (loading || !isUsingRealData) {
-      // Fallback state: original decorative static dots
+  // Recharts Custom Tooltip
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
       return (
-        <>
-          <div className="absolute top-8 left-16 w-2 h-2 rounded-full bg-status-critical shadow-[0_0_8px_#F87171] animate-ping" />
-          <div className="absolute top-12 left-16 w-2 h-2 rounded-full bg-status-critical" />
-
-          <div className="absolute bottom-16 right-12 w-1.5 h-1.5 rounded-full bg-status-warning shadow-[0_0_8px_#FBBF24] animate-ping" style={{ animationDelay: '1.5s' }} />
-          <div className="absolute bottom-20 right-12 w-1.5 h-1.5 rounded-full bg-status-warning" />
-
-          <div className="absolute top-24 right-16 w-2 h-2 rounded-full bg-status-success shadow-[0_0_8px_#34D399] animate-ping" style={{ animationDelay: '3.2s' }} />
-          <div className="absolute top-28 right-16 w-2 h-2 rounded-full bg-status-success" />
-        </>
-      );
-    }
-
-    // Dynamic CISA KEV entries positioning
-    const dates = cves.map(c => new Date(c.dateAdded || Date.now()).getTime());
-    const minTime = Math.min(...dates);
-    const maxTime = Math.max(...dates);
-
-    return cves.map((cve, idx) => {
-      const angle = getAngleFromId(cve.id);
-      
-      const cveTime = new Date(cve.dateAdded || Date.now()).getTime();
-      let r = 60;
-      if (maxTime !== minTime) {
-        const ratio = (cveTime - minTime) / (maxTime - minTime);
-        r = 90 - (ratio * 70); // Keep radius within safe range: 20px (newest) to 90px (oldest)
-      }
-
-      // Convert polar to cartesian coordinates relative to center (0, 0)
-      const x = r * Math.cos(angle);
-      const y = r * Math.sin(angle);
-
-      // Default severity coloring (since CISA KEV doesn't specify CVSS)
-      let colorClass = 'bg-accent-cyan';
-      let glowColor = '#22d3ee';
-      
-      if (cve.severity === 'critical') {
-        colorClass = 'bg-status-critical';
-        glowColor = '#F87171';
-      } else if (cve.severity === 'warning') {
-        colorClass = 'bg-status-warning';
-        glowColor = '#FBBF24';
-      }
-
-      return (
-        <div key={cve.id}>
-          {/* Pulsating radar ping */}
-          <div 
-            className="absolute rounded-full animate-ping pointer-events-none"
-            style={{
-              left: `calc(50% + ${x}px - 4px)`,
-              top: `calc(50% + ${y}px - 4px)`,
-              width: '8px',
-              height: '8px',
-              backgroundColor: glowColor,
-              animationDelay: `${idx * 0.5}s`
-            }}
-          />
-          {/* Main blip */}
-          <div 
-            className={`absolute rounded-full cursor-help hover:scale-150 transition-transform ${colorClass}`}
-            title={`${cve.id}: ${cve.title}`}
-            style={{
-              left: `calc(50% + ${x}px - 3px)`,
-              top: `calc(50% + ${y}px - 3px)`,
-              width: '6px',
-              height: '6px',
-              boxShadow: `0 0 8px ${glowColor}`
-            }}
-          />
+        <div className="bg-[#0f172a] border border-border-subtle p-2 rounded-btn font-mono text-[10px] text-text-primary shadow-lg">
+          <p className="font-bold text-accent-cyan">{payload[0].payload.name}</p>
+          <p className="text-text-secondary mt-0.5">{payload[0].value} Active Exploit(s)</p>
         </div>
       );
-    });
+    }
+    return null;
   };
 
   return (
@@ -293,45 +236,59 @@ export default function PlaceholderWatchtower() {
         </div>
       </div>
 
-      {/* Row 1: Radar Sweep & Intrusion Logs */}
+      {/* Row 1: CVE Severity Breakdown & Intrusion Logs */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
-        {/* Global Attack Radar */}
+        {/* CVE Severity Breakdown (Grouped by Vendor) */}
         <Card className="p-6 border border-border-subtle flex flex-col gap-4 bg-bg-secondary/20 relative overflow-hidden">
           <div className="flex items-center justify-between z-10">
             <div className="flex items-center gap-2">
               <Cpu className="w-4.5 h-4.5 text-accent-cyan" />
-              <h2 className="text-sm font-display font-bold text-text-primary">Global Threat Radar</h2>
+              <h2 className="text-sm font-display font-bold text-text-primary">CVE Severity Breakdown</h2>
             </div>
-            <Badge status="success" className="text-[9px]">Active Sweep</Badge>
+            <Badge status="success" className="text-[9px]">Live Intel</Badge>
           </div>
 
-          <div className="flex-1 flex justify-center items-center py-6 relative z-10">
-            <div className="relative w-56 h-56 rounded-full border border-accent-cyan/20 flex items-center justify-center">
-              {/* Concentric Circles */}
-              <div className="absolute w-40 h-40 rounded-full border border-accent-cyan/15" />
-              <div className="absolute w-24 h-24 rounded-full border border-accent-cyan/10" />
-              
-              {/* Crosshairs */}
-              <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-accent-cyan/10 -translate-x-1/2" />
-              <div className="absolute left-0 right-0 top-1/2 h-[1px] bg-accent-cyan/10 -translate-y-1/2" />
-
-              {/* Sweeping Line */}
-              <motion.div 
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 8, ease: 'linear' }}
-                className="absolute top-1/2 left-1/2 w-28 h-[2px] bg-gradient-to-r from-transparent to-accent-cyan origin-left -translate-y-1/2"
-                style={{ top: 'calc(50% - 1px)' }}
-              />
-
-              {/* Threat Dots */}
-              {getRadarBlips()}
-            </div>
+          <div className="flex-1 flex flex-col justify-center min-h-[220px]">
+            {loading ? (
+              <div className="flex flex-col gap-3">
+                <div className="text-center py-2 text-xs font-mono text-text-muted animate-pulse">
+                  Aggregating vendor threats...
+                </div>
+                <Skeleton className="h-6 w-full" />
+                <Skeleton className="h-6 w-full" />
+                <Skeleton className="h-6 w-full" />
+              </div>
+            ) : error ? (
+              <div className="text-center text-xs font-mono text-text-muted py-6">
+                No data available
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart
+                  data={getChartData()}
+                  layout="vertical"
+                  margin={{ top: 10, right: 10, left: 10, bottom: 5 }}
+                >
+                  <XAxis type="number" hide />
+                  <YAxis 
+                    dataKey="name" 
+                    type="category" 
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#94a3b8', fontSize: 10, fontFamily: 'monospace' }}
+                    width={90}
+                  />
+                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(34, 211, 238, 0.05)' }} />
+                  <Bar dataKey="value" fill="#22d3ee" radius={[0, 4, 4, 0]} barSize={12} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
 
           <div className="flex justify-between items-center text-[10px] font-mono text-text-muted mt-2 border-t border-border-subtle/30 pt-3">
-            <span>RADAR: {cves.length > 0 && cves[0].id !== 'CVE-2026-1044' ? `${cves.length} ACTIVE SIGNATURES` : '3 ACTIVE SIGNATURES'}</span>
-            <span>POLAR COORDINATES: SYNCED</span>
+            <span>SOURCE: CISA KEV CATALOG</span>
+            <span>TOTAL VENDORS: {loading || error ? '...' : new Set(cves.map(c => c.vendor || 'Unknown')).size}</span>
           </div>
         </Card>
 

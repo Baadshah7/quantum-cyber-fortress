@@ -34,6 +34,13 @@ jobs:
         run: npm ci
 
       - name: Build
+        env:
+          VITE_FIREBASE_API_KEY: AIzaSyD8G_pVnqoZ7j68oQlCzSXLgBJAvnPotJ4
+          VITE_FIREBASE_AUTH_DOMAIN: quantumcyberfortress.firebaseapp.com
+          VITE_FIREBASE_PROJECT_ID: quantumcyberfortress
+          VITE_FIREBASE_STORAGE_BUCKET: quantumcyberfortress.firebasestorage.app
+          VITE_FIREBASE_MESSAGING_SENDER_ID: "98091858395"
+          VITE_FIREBASE_APP_ID: 1:98091858395:web:ae5130803398ceac8d8ffe
         run: npm run build
 
       - name: Setup Pages

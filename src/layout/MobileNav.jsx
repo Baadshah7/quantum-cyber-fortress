@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { X, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
@@ -9,14 +9,16 @@ import { Button } from '@/design-system/components/Button';
 
 export default function MobileNav({ isOpen, onClose }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const drawerRef = useRef(null);
   const { reducedMotion } = useReducedMotion();
-  const { user, signOut } = useAuth();
+  const { user, signOutUser } = useAuth();
 
   const handleSignOut = async () => {
     try {
-      await signOut();
+      await signOutUser();
       onClose();
+      navigate('/');
     } catch (err) {
       console.error('Sign out failed:', err);
     }

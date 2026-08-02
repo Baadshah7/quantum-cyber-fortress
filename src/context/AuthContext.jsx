@@ -1,78 +1,70 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
-
+import { onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
+import { auth, googleProvider } from '@/lib/firebase';
 
 const AuthContext = createContext({
   user: null,
-  session: null,
   loading: true,
-  signUp: async () => {},
+  isAuthenticated: false,
   signIn: async () => {},
   signInWithGoogle: async () => {},
-  signOut: async () => {},
+  signOutUser: async () => {},
 });
 
 export function AuthProvider({ children }) {
-  const [session, setSession] = useState(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get active session on mount
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    // Listen for auth state changes
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
       setLoading(false);
-    }).catch((err) => {
-      console.error('Error fetching Supabase session:', err);
-      setLoading(false);
-    });
-
-    // Listen for auth state changes (syncs across tabs automatically)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    }, (err) => {
+      console.error('onAuthStateChanged error:', err);
       setLoading(false);
     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    return unsubscribe;
   }, []);
 
-  const signUp = async (email, password) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    if (error) throw error;
-    return data;
-  };
-
   const signIn = async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) throw error;
-    return data;
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      return userCredential.user;
+    } catch (err) {
+      console.error('Firebase signInWithEmailAndPassword error:', err);
+      const code = err.code;
+      if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
+        throw new Error('ACCESS DENIED: Invalid decrypt credentials.');
+      } else if (code === 'auth/invalid-email') {
+        throw new Error('ACCESS DENIED: Invalid email format.');
+      } else if (code === 'auth/too-many-requests') {
+        throw new Error('ACCESS DENIED: Session locked due to too many failed decryption attempts. Try again later.');
+      } else {
+        throw new Error(`ACCESS DENIED: ${err.message || 'Authentication handshake failure.'}`);
+      }
+    }
   };
 
   const signInWithGoogle = async () => {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin + '/quantum-cyber-fortress/',
-      },
-    });
-    if (error) throw error;
-    return data;
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      return result.user;
+    } catch (err) {
+      console.error('Firebase signInWithPopup error:', err);
+      throw err;
+    }
   };
 
-  const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+  const signOutUser = async () => {
+    try {
+      await signOut(auth);
+    } catch (err) {
+      console.error('Firebase signOut error:', err);
+      throw err;
+    }
   };
 
   const isAuthenticated = !!user;
@@ -81,13 +73,11 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         user,
-        session,
         loading,
         isAuthenticated,
-        signUp,
         signIn,
         signInWithGoogle,
-        signOut,
+        signOutUser,
       }}
     >
       {children}

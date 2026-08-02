@@ -13,13 +13,13 @@ export const navigationItems = [
 ];
 
 export default function Navbar({ reducedMotion, toggleReducedMotion, onOpenMobileMenu }) {
-  const { user, signOut } = useAuth();
+  const { user, signOutUser } = useAuth();
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleSignOut = async () => {
     try {
-      await signOut();
+      await signOutUser();
       navigate('/');
     } catch (err) {
       console.error('Sign out failed:', err);

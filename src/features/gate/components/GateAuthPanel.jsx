@@ -45,13 +45,7 @@ export default function GateAuthPanel() {
       navigate(origin, { replace: true });
     } catch (err) {
       console.error('Auth action failed:', err);
-      // Friendly messages for Supabase errors
-      const errMsg = err.message || 'Access Denied: Internal gate exception.';
-      if (errMsg.includes('Invalid login credentials')) {
-        setApiError('ACCESS DENIED: Invalid decrypt credentials.');
-      } else {
-        setApiError(`ACCESS DENIED: ${errMsg}`);
-      }
+      setApiError(err.message || 'ACCESS DENIED: Internal gate exception.');
     } finally {
       setSubmitting(false);
     }
@@ -63,6 +57,9 @@ export default function GateAuthPanel() {
     setSubmitting(true);
     try {
       await signInWithGoogle();
+      // Redirect to labs on successful Google auth
+      const origin = location.state?.from?.pathname || '/labs';
+      navigate(origin, { replace: true });
     } catch (err) {
       console.error('Google OAuth failed:', err);
       setApiError(`OAUTH FAILURE: ${err.message || 'Handshake failed.'}`);

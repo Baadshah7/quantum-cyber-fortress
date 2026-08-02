@@ -16,8 +16,12 @@ export const sentinelJourney = [
   },
   {
     phase: '04',
+    name: 'Simulate',
+    description: 'Face active attack vectors in the Threat Simulator and validate your defensive posture under pressure.'
+  },
+  {
+    phase: '05',
     name: 'Solve',
     description: 'Apply security methodologies inside realistic cybersecurity forensics, network, and CLI labs.'
   }
 ];
-

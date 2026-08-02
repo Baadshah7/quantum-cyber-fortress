@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Card } from '@/design-system/components/Card';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { BookOpen, Terminal, Radio } from 'lucide-react';
+import { BookOpen, Terminal, Swords, FlaskConical } from 'lucide-react';
 
 export default function CoreExperienceSection() {
   const { reducedMotion } = useReducedMotion();
@@ -41,7 +41,7 @@ export default function CoreExperienceSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-50px' }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
         >
           <motion.div variants={cardVariants}>
             <Card className="p-6 h-full flex flex-col gap-4 border border-border-subtle hover:shadow-glow-cyan hover:border-accent-cyan transition-all duration-200">
@@ -77,15 +77,31 @@ export default function CoreExperienceSection() {
 
           <motion.div variants={cardVariants}>
             <Card className="p-6 h-full flex flex-col gap-4 border border-border-subtle hover:shadow-glow-cyan hover:border-accent-cyan transition-all duration-200">
-              <div className="p-3 bg-accent-cyan/10 border border-accent-cyan/20 rounded-btn text-accent-cyan w-fit">
-                <Radio className="w-5 h-5" aria-hidden="true" />
+              <div className="p-3 bg-status-critical/10 border border-status-critical/20 rounded-btn text-status-critical w-fit">
+                <Swords className="w-5 h-5" aria-hidden="true" />
               </div>
               <div className="flex flex-col gap-2">
                 <h3 className="text-base font-display font-bold text-text-primary">
-                  Threat Intelligence Feed
+                  Threat Simulation Engine
                 </h3>
                 <p className="text-xs font-ui text-text-secondary leading-relaxed">
-                  Audit live threat databases and real-time CVE advisories in the Watchtower. Monitor global attack radar coordinate sweeps and threat trends to stay secure.
+                  Execute live red-team attack scenarios inside the Threat Simulator — DDoS, malware propagation, and privilege escalation — to understand how real-world breaches unfold and how defenders respond.
+                </p>
+              </div>
+            </Card>
+          </motion.div>
+
+          <motion.div variants={cardVariants}>
+            <Card className="p-6 h-full flex flex-col gap-4 border border-border-subtle hover:shadow-glow-cyan hover:border-accent-cyan transition-all duration-200">
+              <div className="p-3 bg-accent-cyan/10 border border-accent-cyan/20 rounded-btn text-accent-cyan w-fit">
+                <FlaskConical className="w-5 h-5" aria-hidden="true" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <h3 className="text-base font-display font-bold text-text-primary">
+                  Realistic Cybersecurity Labs
+                </h3>
+                <p className="text-xs font-ui text-text-secondary leading-relaxed">
+                  Apply everything you&apos;ve learned inside the Labs Portal — forensic investigations, terminal challenges, packet analysis exercises, and hands-on security simulations.
                 </p>
               </div>
             </Card>

@@ -114,7 +114,7 @@ export default function MobileNav({ isOpen, onClose }) {
                 <div className="flex flex-col gap-2.5 font-mono text-[10px]">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-full bg-accent-cyan/10 border border-accent-cyan/30 flex items-center justify-center font-bold text-accent-cyan text-xs select-none">
-                      {user.email[0].toUpperCase()}
+                      {user.email ? user.email[0].toUpperCase() : 'S'}
                     </div>
                     <div className="flex flex-col min-w-0">
                       <span className="text-text-muted text-[8px] uppercase tracking-wider font-bold">SENTINEL</span>

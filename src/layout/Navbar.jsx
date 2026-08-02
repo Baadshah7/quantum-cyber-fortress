@@ -90,7 +90,7 @@ export default function Navbar({ reducedMotion, toggleReducedMotion, onOpenMobil
                 className="w-8 h-8 rounded-full bg-accent-cyan/10 border border-accent-cyan/30 hover:border-accent-cyan hover:shadow-glow-cyan/25 flex items-center justify-center font-mono text-xs font-bold text-accent-cyan transition-all cursor-pointer select-none"
                 title="Sentinel Profile"
               >
-                {user.email[0].toUpperCase()}
+                {user.email ? user.email[0].toUpperCase() : 'S'}
               </button>
 
               {dropdownOpen && (

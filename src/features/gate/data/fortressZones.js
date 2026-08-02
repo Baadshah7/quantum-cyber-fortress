@@ -24,11 +24,11 @@ export const fortressZones = [
     status: 'active'
   },
   {
-    name: 'Watchtower',
-    icon: 'Radio',
-    route: '/watchtower',
-    description: 'Audit active cybersecurity news, latest CVEs, threat intel feeds, security blogs, global attack trends, and advisories.',
-    objective: 'Analyze live threat intelligence, global vulnerability feeds, security advisories, and RSS threat streams.',
+    name: 'Labs Portal',
+    icon: 'FlaskConical',
+    route: '/labs',
+    description: "Apply everything you've learned inside realistic cybersecurity labs — forensic investigations, terminal challenges, packet analysis exercises, and hands-on security simulations.",
+    objective: "Verify defensive security protocols and analyze system logs inside sandbox environments.",
     status: 'active'
   }
 ];

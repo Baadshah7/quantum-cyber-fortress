@@ -82,9 +82,9 @@ export default function HeroSection() {
               className="w-full sm:w-auto font-semibold shadow-glow-cyan"
               icon={<ChevronRight className="w-4 h-4" />}
               iconPosition="right"
-              onClick={() => navigate('/watchtower')}
+              onClick={() => navigate('/labs')}
             >
-              Enter Watchtower Command
+              Enter Labs Command Center
             </Button>
 
             <Button

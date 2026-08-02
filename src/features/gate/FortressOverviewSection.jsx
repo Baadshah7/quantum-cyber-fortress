@@ -4,24 +4,26 @@ import { Card } from '@/design-system/components/Card';
 import { Badge } from '@/design-system/components/Badge';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { fortressZones } from './data/fortressZones';
-import { Shield, BookOpen, Terminal, Radio, ArrowUpRight, CheckCircle2 } from 'lucide-react';
+import { Shield, BookOpen, Terminal, Radio, FlaskConical, ArrowUpRight, CheckCircle2 } from 'lucide-react';
 
 const iconMap = {
   Shield,
   BookOpen,
   Terminal,
-  Radio
+  Radio,
+  FlaskConical
 };
 
 const zoneBrandMap = {
   'Gate': 'text-accent-cyan bg-accent-cyan/10 border-accent-cyan/20',
   'Academy': 'text-accent-violet bg-accent-violet/10 border-accent-violet/20',
   'Training Yard': 'text-status-warning bg-status-warning/10 border-status-warning/20',
-  'Watchtower': 'text-accent-cyan bg-accent-cyan/10 border-accent-cyan/20',
+  'Labs Portal': 'text-accent-cyan bg-accent-cyan/10 border-accent-cyan/20',
 };
 
 // Animated Vector Illustration components for each card
 function SectorIllustration({ zoneName }) {
+  const { reducedMotion } = useReducedMotion();
   if (zoneName === 'Gate') {
     return (
       <div className="w-full h-28 bg-bg-primary/60 border border-border-subtle/50 rounded-btn mb-4 relative overflow-hidden flex items-center justify-center">
@@ -82,22 +84,19 @@ function SectorIllustration({ zoneName }) {
       </div>
     );
   }
-  if (zoneName === 'Watchtower') {
+  if (zoneName === 'Labs Portal') {
     return (
       <div className="w-full h-28 bg-bg-primary/60 border border-border-subtle/50 rounded-btn mb-4 relative overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(34,211,238,0.02)_1px,transparent_1px)] bg-[size:10px_10px]" />
         <svg className="w-16 h-16 text-accent-cyan" viewBox="0 0 64 64" fill="none">
-          <circle cx="32" cy="32" r="22" className="stroke-current opacity-25" strokeWidth="1.5" />
-          <circle cx="32" cy="32" r="14" className="stroke-current opacity-25" strokeWidth="1" />
-          <circle cx="32" cy="32" r="6" className="stroke-current opacity-25" strokeWidth="1" />
-          <circle cx="32" cy="32" r="1.5" className="fill-current" />
-          <motion.line 
-            x1="32" y1="32" x2="32" y2="10" 
-            className="stroke-current origin-bottom" 
-            strokeWidth="2" 
-            animate={{ rotate: 360 }} 
-            transition={{ repeat: Infinity, duration: 6, ease: "linear" }}
-          />
+          {/* Beaker outline */}
+          <path d="M22 12H42M28 12V24L16 48C14 52 17 56 22 56H42C47 56 50 52 48 48L36 24V12" className="stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          {/* Liquid level */}
+          <path d="M20 40H44" className="stroke-current opacity-40" strokeWidth="1.5" strokeLinecap="round" />
+          {/* Bubbles */}
+          <motion.circle cx="26" cy="34" r="2" className="fill-current" animate={reducedMotion ? {} : { y: [0, -12], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 2, delay: 0.2 }} />
+          <motion.circle cx="34" cy="30" r="1.5" className="fill-current" animate={reducedMotion ? {} : { y: [0, -10], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1.5, delay: 0.8 }} />
+          <motion.circle cx="38" cy="36" r="2.5" className="fill-current" animate={reducedMotion ? {} : { y: [0, -14], opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 2.5, delay: 0.5 }} />
         </svg>
       </div>
     );

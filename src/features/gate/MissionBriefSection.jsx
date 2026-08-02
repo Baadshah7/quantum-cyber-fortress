@@ -34,7 +34,7 @@ export default function MissionBriefSection() {
           </p>
 
           <p className="text-sm md:text-base font-ui text-text-secondary leading-relaxed">
-            The fortress shields are currently operational, but constant threat alerts require vigilance. You will progress through the 4 active operational sectors—the Gate, Academy, Training Yard, and Watchtower—verifying protocols, mitigating vulnerabilities, and auditing threat logs. Restricted sectors remain inaccessible until future authorization. The systems await your command.
+            The fortress shields are currently operational, but constant threat alerts require vigilance. You will progress through the 4 active operational sectors—the Gate, Academy, Training Yard, and Labs Portal—verifying protocols, mitigating vulnerabilities, and auditing threat logs. Restricted sectors remain inaccessible until future authorization. The systems await your command.
           </p>
         </Card>
       </motion.div>

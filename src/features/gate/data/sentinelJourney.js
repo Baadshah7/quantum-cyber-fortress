@@ -16,8 +16,8 @@ export const sentinelJourney = [
   },
   {
     phase: '04',
-    name: 'Monitor',
-    description: 'Observe global threat feeds, CVE news, and live attack vectors from the Watchtower.'
+    name: 'Solve',
+    description: 'Apply security methodologies inside realistic cybersecurity forensics, network, and CLI labs.'
   }
 ];
 

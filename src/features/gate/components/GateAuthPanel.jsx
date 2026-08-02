@@ -63,8 +63,8 @@ export default function GateAuthPanel() {
         setSubmitting(false);
         return;
       }
-      // Redirect to watchtower on successful auth
-      const origin = location.state?.from?.pathname || '/watchtower';
+      // Redirect to labs on successful auth
+      const origin = location.state?.from?.pathname || '/labs';
       navigate(origin, { replace: true });
     } catch (err) {
       console.error('Auth action failed:', err);

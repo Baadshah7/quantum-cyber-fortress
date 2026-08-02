@@ -9,7 +9,6 @@ export const navigationItems = [
   { name: 'Academy', path: '/academy' },
   { name: 'Training Yard', path: '/simulator' },
   { name: 'Labs', path: '/labs' },
-  { name: 'Watchtower', path: '/watchtower' },
 ];
 
 export default function Navbar({ reducedMotion, toggleReducedMotion, onOpenMobileMenu }) {

@@ -4,7 +4,7 @@ import { Badge } from '@/design-system/components/Badge';
 import { ShieldCheck, ShieldAlert, AlertTriangle } from 'lucide-react';
 
 const LOG_LINES = [
-  { id: 1, text: '[2026-07-28 04:02:11] syslogd: Log synchronizer synced: Gate, Academy, Watchtower', threat: false },
+  { id: 1, text: '[2026-07-28 04:02:11] syslogd: Log synchronizer synced: Gate, Academy, Labs Portal', threat: false },
   { id: 2, text: '[2026-07-28 04:05:32] sshd[1245]: Connection established from sentinel node (10.0.8.22)', threat: false },
   { id: 3, text: '[2026-07-28 04:08:55] sshd[1248]: Failed password for root from 198.51.100.42 port 49223 ssh2', threat: true },
   { id: 4, text: '[2026-07-28 04:09:12] sshd[1245]: session opened for user sentinel by (uid=1000)', threat: false },

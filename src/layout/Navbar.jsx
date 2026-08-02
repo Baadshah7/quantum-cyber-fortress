@@ -1,4 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
+import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Menu, Shield, Zap, ZapOff } from 'lucide-react';
 import { Button } from '@/design-system/components/Button';
@@ -14,6 +15,7 @@ export const navigationItems = [
 export default function Navbar({ reducedMotion, toggleReducedMotion, onOpenMobileMenu }) {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -82,27 +84,41 @@ export default function Navbar({ reducedMotion, toggleReducedMotion, onOpenMobil
           </Button>
 
           {user ? (
-            <div className="flex items-center gap-2 border-l border-border-subtle pl-2">
-              <span 
-                className="hidden md:inline font-mono text-[10px] text-accent-cyan bg-accent-cyan/10 border border-accent-cyan/20 px-2 py-0.5 rounded-full truncate max-w-[120px]" 
-                title={user.email}
+            <div className="relative border-l border-border-subtle pl-2">
+              <button
+                onClick={() => setDropdownOpen(prev => !prev)}
+                className="w-8 h-8 rounded-full bg-accent-cyan/10 border border-accent-cyan/30 hover:border-accent-cyan hover:shadow-glow-cyan/25 flex items-center justify-center font-mono text-xs font-bold text-accent-cyan transition-all cursor-pointer select-none"
+                title="Sentinel Profile"
               >
-                {user.email.split('@')[0]}
-              </span>
-              <span 
-                className="md:hidden font-mono text-[9px] text-accent-cyan bg-accent-cyan/10 border border-accent-cyan/20 w-5 h-5 flex items-center justify-center rounded-full uppercase font-bold"
-                title={user.email}
-              >
-                {user.email[0]}
-              </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleSignOut}
-                className="text-[10px] font-mono px-2 py-1 text-status-critical hover:text-red-400 hover:bg-status-critical/5 rounded"
-              >
-                SIGN OUT
-              </Button>
+                {user.email[0].toUpperCase()}
+              </button>
+
+              {dropdownOpen && (
+                <>
+                  <div 
+                    className="fixed inset-0 z-40" 
+                    onClick={() => setDropdownOpen(false)}
+                  />
+                  <div className="absolute right-0 mt-2 w-48 bg-bg-secondary/95 border border-accent-cyan/30 rounded-btn p-3 shadow-glow-cyan/20 backdrop-blur-md z-50 flex flex-col gap-2.5 font-mono text-[10px] items-stretch animate-in fade-in slide-in-from-top-1 duration-150">
+                    <div className="flex flex-col gap-0.5 border-b border-border-subtle/50 pb-2 select-none">
+                      <span className="text-text-muted text-[8px] uppercase tracking-wider font-bold">SENTINEL OPERATOR</span>
+                      <span className="text-text-primary font-bold truncate" title={user.email}>{user.email}</span>
+                    </div>
+                    
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        handleSignOut();
+                      }}
+                      className="w-full text-left justify-start text-status-critical hover:bg-status-critical/10 hover:text-red-400 font-bold border border-transparent hover:border-status-critical/30 py-1"
+                    >
+                      TERMINATE SESSION
+                    </Button>
+                  </div>
+                </>
+              )}
             </div>
           ) : (
             <NavLink

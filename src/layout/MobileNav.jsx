@@ -109,10 +109,15 @@ export default function MobileNav({ isOpen, onClose }) {
 
             <div className="mt-auto pt-4 border-t border-border-subtle flex flex-col gap-3">
               {user ? (
-                <div className="flex flex-col gap-2 font-mono text-[10px]">
-                  <div className="flex items-center gap-2 text-text-secondary">
-                    <div className="w-1.5 h-1.5 rounded-full bg-status-success shadow-[0_0_6px_rgba(52,211,153,0.5)] animate-pulse" />
-                    <span className="truncate max-w-[180px]" title={user.email}>{user.email}</span>
+                <div className="flex flex-col gap-2.5 font-mono text-[10px]">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-full bg-accent-cyan/10 border border-accent-cyan/30 flex items-center justify-center font-bold text-accent-cyan text-xs select-none">
+                      {user.email[0].toUpperCase()}
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-text-muted text-[8px] uppercase tracking-wider font-bold">SENTINEL</span>
+                      <span className="text-text-secondary font-bold truncate text-[10px]" title={user.email}>{user.email}</span>
+                    </div>
                   </div>
                   <Button
                     variant="outline"
@@ -120,7 +125,7 @@ export default function MobileNav({ isOpen, onClose }) {
                     onClick={handleSignOut}
                     className="w-full text-[10px] font-bold text-status-critical border-status-critical/30 hover:bg-status-critical/5 py-1.5"
                   >
-                    SIGN OUT SESSION
+                    TERMINATE SESSION
                   </Button>
                 </div>
               ) : (

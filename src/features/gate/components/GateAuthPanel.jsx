@@ -10,27 +10,16 @@ import { Shield, Mail, Key, ShieldAlert, Cpu } from 'lucide-react';
 export default function GateAuthPanel() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { signIn, signUp, signInWithGoogle } = useAuth();
+  const { signIn, signInWithGoogle } = useAuth();
   const { reducedMotion } = useReducedMotion();
 
-  // Mode state: 'signin' | 'signup'
-  const [mode, setMode] = useState('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
 
   // Loading & error states
   const [submitting, setSubmitting] = useState(false);
   const [validationError, setValidationError] = useState('');
   const [apiError, setApiError] = useState(location.state?.authError || '');
-
-  const handleModeToggle = () => {
-    setMode(prev => prev === 'signin' ? 'signup' : 'signin');
-    setValidationError('');
-    setApiError('');
-    setPassword('');
-    setConfirmPassword('');
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,21 +37,9 @@ export default function GateAuthPanel() {
       return;
     }
 
-    if (mode === 'signup' && password !== confirmPassword) {
-      setValidationError('Authentication match failed. Passwords do not match.');
-      return;
-    }
-
     setSubmitting(true);
     try {
-      if (mode === 'signin') {
-        await signIn(email, password);
-      } else {
-        await signUp(email, password);
-        setValidationError('Access Request sent. If email verification is enabled, verify your email.');
-        setSubmitting(false);
-        return;
-      }
+      await signIn(email, password);
       // Redirect to labs on successful auth
       const origin = location.state?.from?.pathname || '/labs';
       navigate(origin, { replace: true });
@@ -72,15 +49,11 @@ export default function GateAuthPanel() {
       const errMsg = err.message || 'Access Denied: Internal gate exception.';
       if (errMsg.includes('Invalid login credentials')) {
         setApiError('ACCESS DENIED: Invalid decrypt credentials.');
-      } else if (errMsg.includes('User already registered')) {
-        setApiError('ACCESS DENIED: Sentinel profile already registered.');
       } else {
         setApiError(`ACCESS DENIED: ${errMsg}`);
       }
     } finally {
-      if (mode === 'signin') {
-        setSubmitting(false);
-      }
+      setSubmitting(false);
     }
   };
 
@@ -116,8 +89,8 @@ export default function GateAuthPanel() {
             <Shield className="w-4 h-4 text-accent-cyan" />
             <span className="text-[10px] font-mono tracking-widest text-text-muted font-bold">ACCESS TERMINAL</span>
           </div>
-          <Badge variant={mode === 'signin' ? 'cyan' : 'violet'} className="text-[8px] font-mono">
-            {mode === 'signin' ? 'SIGN_IN_V1' : 'REQ_ACCESS_V1'}
+          <Badge variant="cyan" className="text-[8px] font-mono">
+            SIGN_IN_V1
           </Badge>
         </div>
 
@@ -164,26 +137,9 @@ export default function GateAuthPanel() {
             />
           </div>
 
-          {mode === 'signup' && (
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="auth-confirm" className="font-mono text-[9px] text-text-muted tracking-wider uppercase flex items-center gap-1.5">
-                <Key className="w-3 h-3 text-accent-violet" /> VERIFY PASSWORD
-              </label>
-              <input
-                id="auth-confirm"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="••••••••••••"
-                className="w-full bg-bg-primary/50 border border-border-subtle rounded-btn px-3 py-2 text-xs focus:outline-none focus:border-accent-violet font-mono text-text-primary placeholder:text-text-muted/65"
-                required
-              />
-            </div>
-          )}
-
           <Button
             type="submit"
-            variant={mode === 'signin' ? 'primary' : 'secondary'}
+            variant="primary"
             size="sm"
             disabled={submitting}
             className="w-full text-xs font-mono font-bold tracking-wider mt-2 shadow-glow-cyan"
@@ -192,11 +148,7 @@ export default function GateAuthPanel() {
             )}
             iconPosition="left"
           >
-            {submitting 
-              ? 'TRANSMITTING CREDENTIALS...' 
-              : mode === 'signin' 
-                ? 'INITIALIZE DECRYPT' 
-                : 'SUBMIT ACCESS REQUEST'}
+            {submitting ? 'TRANSMITTING CREDENTIALS...' : 'INITIALIZE DECRYPT'}
           </Button>
         </form>
 
@@ -219,21 +171,6 @@ export default function GateAuthPanel() {
         >
           CONTINUE WITH GOOGLE
         </Button>
-
-        {/* Toggle Mode */}
-        <div className="text-[10px] font-mono text-center mt-2 border-t border-border-subtle/30 pt-3">
-          <span className="text-text-muted">
-            {mode === 'signin' ? 'No active Sentinel profile?' : 'Sentinel credentials ready?'}
-          </span>{' '}
-          <button
-            onClick={handleModeToggle}
-            className={`font-bold hover:underline cursor-pointer focus:outline-none ${
-              mode === 'signin' ? 'text-accent-violet' : 'text-accent-cyan'
-            }`}
-          >
-            {mode === 'signin' ? 'Request Access' : 'Sign In'}
-          </button>
-        </div>
       </div>
     </Card>
   );

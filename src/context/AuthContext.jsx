@@ -75,12 +75,15 @@ export function AuthProvider({ children }) {
     if (error) throw error;
   };
 
+  const isAuthenticated = !!user;
+
   return (
     <AuthContext.Provider
       value={{
         user,
         session,
         loading,
+        isAuthenticated,
         signUp,
         signIn,
         signInWithGoogle,

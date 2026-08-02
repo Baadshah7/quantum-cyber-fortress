@@ -12,8 +12,6 @@ const firebaseConfig = {
 
 let app;
 try {
-  console.log('Firebase API key loaded:', import.meta.env.VITE_FIREBASE_API_KEY ? 'YES' : 'NO');
-  console.log('Vite Env Keys:', Object.keys(import.meta.env).filter(k => k.startsWith('VITE_')));
   if (!import.meta.env.VITE_FIREBASE_API_KEY) {
     console.warn('VITE_FIREBASE_API_KEY is missing. Verify your .env setup and restart your dev server.');
   }

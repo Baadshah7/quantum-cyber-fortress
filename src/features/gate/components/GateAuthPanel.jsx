@@ -10,16 +10,27 @@ import { Shield, Mail, Key, ShieldAlert, Cpu } from 'lucide-react';
 export default function GateAuthPanel() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { signIn, signInWithGoogle } = useAuth();
+  const { signIn, signUp, signInWithGoogle } = useAuth();
   const { reducedMotion } = useReducedMotion();
 
+  // Mode state: 'signin' | 'signup'
+  const [mode, setMode] = useState('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   // Loading & error states
   const [submitting, setSubmitting] = useState(false);
   const [validationError, setValidationError] = useState('');
   const [apiError, setApiError] = useState(location.state?.authError || '');
+
+  const handleModeToggle = () => {
+    setMode(prev => prev === 'signin' ? 'signup' : 'signin');
+    setValidationError('');
+    setApiError('');
+    setPassword('');
+    setConfirmPassword('');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,10 +48,19 @@ export default function GateAuthPanel() {
       return;
     }
 
+    if (mode === 'signup' && password !== confirmPassword) {
+      setValidationError('Authentication match failed. Passwords do not match.');
+      return;
+    }
+
     setSubmitting(true);
     try {
-      await signIn(email, password);
-      // Redirect to labs on successful auth
+      if (mode === 'signin') {
+        await signIn(email, password);
+      } else {
+        await signUp(email, password);
+      }
+      // Redirect to labs on successful auth (signin or signup)
       const origin = location.state?.from?.pathname || '/labs';
       navigate(origin, { replace: true });
     } catch (err) {
@@ -86,14 +106,14 @@ export default function GateAuthPanel() {
             <Shield className="w-4 h-4 text-accent-cyan" />
             <span className="text-[10px] font-mono tracking-widest text-text-muted font-bold">ACCESS TERMINAL</span>
           </div>
-          <Badge variant="cyan" className="text-[8px] font-mono">
-            SIGN_IN_V1
+          <Badge variant={mode === 'signin' ? 'cyan' : 'violet'} className="text-[8px] font-mono">
+            {mode === 'signin' ? 'SIGN_IN_V1' : 'REQ_ACCESS_V1'}
           </Badge>
         </div>
 
         {/* Alerts / Error Messages */}
         {(apiError || validationError) && (
-          <div className="flex gap-2.5 items-start p-3 bg-status-critical/10 border border-status-critical/20 rounded-btn text-status-critical font-mono text-[10px] leading-relaxed">
+          <div className="flex gap-2.5 items-start p-3 bg-status-critical/10 border border-status-critical/20 rounded-btn text-status-critical font-mono text-[10px] leading-relaxed animate-in fade-in duration-200">
             <ShieldAlert className="w-4 h-4 shrink-0 text-status-critical" />
             <div className="flex-1">
               <span className="font-bold tracking-wider">[ALERT]</span>{' '}
@@ -132,20 +152,46 @@ export default function GateAuthPanel() {
               className="w-full bg-bg-primary/50 border border-border-subtle rounded-btn px-3 py-2 text-xs focus:outline-none focus:border-accent-cyan font-mono text-text-primary placeholder:text-text-muted/65"
               required
             />
+            {mode === 'signup' && (
+              <span className="text-[8px] font-mono text-text-muted">Password must be at least 6 characters.</span>
+            )}
           </div>
+
+          {mode === 'signup' && (
+            <div className="flex flex-col gap-1.5 animate-in fade-in slide-in-from-top-1 duration-150">
+              <label htmlFor="auth-confirm" className="font-mono text-[9px] text-text-muted tracking-wider uppercase flex items-center gap-1.5">
+                <Key className="w-3 h-3 text-accent-violet" /> VERIFY PASSWORD
+              </label>
+              <input
+                id="auth-confirm"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="••••••••••••"
+                className="w-full bg-bg-primary/50 border border-border-subtle rounded-btn px-3 py-2 text-xs focus:outline-none focus:border-accent-violet font-mono text-text-primary placeholder:text-text-muted/65"
+                required
+              />
+            </div>
+          )}
 
           <Button
             type="submit"
-            variant="primary"
+            variant={mode === 'signin' ? 'primary' : 'secondary'}
             size="sm"
             disabled={submitting}
-            className="w-full text-xs font-mono font-bold tracking-wider mt-2 shadow-glow-cyan"
+            className={`w-full text-xs font-mono font-bold tracking-wider mt-2 ${
+              mode === 'signin' ? 'shadow-glow-cyan' : 'shadow-glow-violet'
+            }`}
             icon={submitting && (
               <span className="w-2 h-2 rounded-full bg-bg-primary animate-pulse" />
             )}
             iconPosition="left"
           >
-            {submitting ? 'TRANSMITTING CREDENTIALS...' : 'INITIALIZE DECRYPT'}
+            {submitting 
+              ? 'TRANSMITTING CREDENTIALS...' 
+              : mode === 'signin' 
+                ? 'INITIALIZE DECRYPT' 
+                : 'SUBMIT ACCESS REQUEST'}
           </Button>
         </form>
 
@@ -168,6 +214,22 @@ export default function GateAuthPanel() {
         >
           CONTINUE WITH GOOGLE
         </Button>
+
+        {/* Toggle Mode */}
+        <div className="text-[10px] font-mono text-center mt-2 border-t border-border-subtle/30 pt-3 select-none">
+          <span className="text-text-muted">
+            {mode === 'signin' ? 'No active Sentinel profile?' : 'Sentinel credentials ready?'}
+          </span>{' '}
+          <button
+            type="button"
+            onClick={handleModeToggle}
+            className={`font-bold hover:underline cursor-pointer focus:outline-none ${
+              mode === 'signin' ? 'text-accent-violet' : 'text-accent-cyan'
+            }`}
+          >
+            {mode === 'signin' ? 'Request Access' : 'Sign In'}
+          </button>
+        </div>
       </div>
     </Card>
   );
